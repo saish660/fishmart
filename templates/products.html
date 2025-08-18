@@ -172,8 +172,8 @@
               <div class="product-seller">
                 {% if product.user.is_fisherman() %}
                 <strong>{{ product.user.store_name }}</strong><br />
-                {{ product.user.store_location }}, {{ product.user.store_city
-                }}<br />
+                {{ product.user.store_location }}, ( {{ product.user.store_city
+                }} )<br />
                 {% endif %}
               </div>
             </div>
