@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fishmart</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='styles.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='home.css') }}"
+    />
+  </head>
+  <body>
+    <nav class="navbar">
+      <div class="navbar-container">
+        <div class="navbar-brand">
+          <a href="#" class="brand-link">Fishmart</a>
+        </div>
+
+        <ul class="navbar-menu">
+          <li class="navbar-item">
+            <a href="{{ url_for('index') }}" class="navbar-link active">Home</a>
+          </li>
+          <li class="navbar-item">
+            <a href="{{ url_for('products') }}" class="navbar-link">Products</a>
+          </li>
+          {% if current_user.is_authenticated %} {% if
+          current_user.is_fisherman() %}
+          <li class="navbar-item">
+            <a href="{{ url_for('post_product') }}" class="navbar-link"
+              >Post Product</a
+            >
+          </li>
+          {% endif %}
+          <li class="navbar-item">
+            <a href="{{ url_for('logout') }}" class="navbar-link">Logout</a>
+          </li>
+          {% else %}
+          <li class="navbar-item">
+            <a href="{{ url_for('login') }}" class="navbar-link">Login</a>
+          </li>
+          <li class="navbar-item">
+            <a href="{{ url_for('signup') }}" class="navbar-link">Sign Up</a>
+          </li>
+          <li class="navbar-item">
+            <a href="{{ url_for('fisherman_signup') }}" class="navbar-link"
+              >Join as Fisherman</a
+            >
+          </li>
+          {% endif %}
+        </ul>
+
+        <div class="mobile-menu-toggle" id="mobile-menu-toggle">
+          <span class="bar"></span>
+          <span class="bar"></span>
+          <span class="bar"></span>
+        </div>
+      </div>
+    </nav>
+
+    <div class="mobile-sidebar" id="mobile-sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-brand">Fishmart</div>
+        <button class="sidebar-close" id="sidebar-close">&times;</button>
+      </div>
+      <ul class="sidebar-menu">
+        <li class="sidebar-item">
+          <a href="{{ url_for('index') }}" class="sidebar-link active">Home</a>
+        </li>
+        <li class="sidebar-item">
+          <a href="{{ url_for('products') }}" class="sidebar-link">Products</a>
+        </li>
+        {% if current_user.is_authenticated %} {% if current_user.is_fisherman()
+        %}
+        <li class="sidebar-item">
+          <a href="{{ url_for('post_product') }}" class="sidebar-link"
+            >Post Product</a
+          >
+        </li>
+        {% endif %}
+        <li class="sidebar-item">
+          <a href="{{ url_for('logout') }}" class="sidebar-link">Logout</a>
+        </li>
+        {% else %}
+        <li class="sidebar-item">
+          <a href="{{ url_for('login') }}" class="sidebar-link">Login</a>
+        </li>
+        <li class="sidebar-item">
+          <a href="{{ url_for('signup') }}" class="sidebar-link">Sign Up</a>
+        </li>
+        <li class="sidebar-item">
+          <a href="{{ url_for('fisherman_signup') }}" class="sidebar-link"
+            >Join as Fisherman</a
+          >
+        </li>
+        {% endif %}
+      </ul>
+    </div>
+
+    <main class="main-content has-hero">
+      <section class="hero-section">
+        <div class="hero-background">
+          <div class="hero-content" id="hero-content">
+            <h1 class="hero-title">Welcome to Fishmart</h1>
+            <p class="hero-subtitle">
+              Your premier destination for fresh seafood
+            </p>
+            <p class="hero-description">
+              At Fishmart, we bring you the finest selection of fresh fish and
+              seafood, sourced daily from trusted suppliers. With over 20 years
+              of experience in the seafood industry, we are committed to
+              providing our customers with the highest quality products and
+              exceptional service.
+            </p>
+            <div class="hero-buttons">
+              <a href="{{ url_for('products') }}" class="cta-button primary"
+                >View Products</a
+              >
+              <a href="{{ url_for('signup') }}" class="cta-button secondary"
+                >Sign Up</a
+              >
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="problem-section">
+        <div class="container">
+          <div class="problem-content">
+            <h2 class="section-title">The Seafood Industry Challenge</h2>
+            <div class="problem-grid">
+              <div class="feature-item">
+                <h3>Quality Uncertainty</h3>
+                <p>
+                  Consumers struggle to find truly fresh seafood, often
+                  receiving products that have been sitting in storage for days
+                  or weeks.
+                </p>
+              </div>
+              <div class="feature-item">
+                <h3>Limited Access</h3>
+                <p>
+                  Many areas lack reliable seafood suppliers, forcing customers
+                  to compromise on quality or travel long distances.
+                </p>
+              </div>
+              <div class="feature-item">
+                <h3>Price Transparency</h3>
+                <p>
+                  Hidden markups and unclear pricing make it difficult for
+                  customers to get fair value for premium seafood products.
+                </p>
+              </div>
+              <div class="feature-item">
+                <h3>Sustainability Concerns</h3>
+                <p>
+                  Customers want to support responsible fishing practices but
+                  lack information about the source and methods used.
+                </p>
+              </div>
+            </div>
+            <div class="problem-solution">
+              <h3>Our Solution</h3>
+              <p>
+                Fishmart bridges the gap between ocean and table, providing
+                guaranteed fresh seafood with complete transparency in sourcing,
+                pricing, and sustainability practices. We connect you directly
+                with trusted suppliers for the freshest catch every day.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="features-section">
+        <div class="container">
+          <h2 class="section-title">Why Use Fishmart?</h2>
+          <h2 class="features_for">For Buyers</h2>
+          <div class="features">
+            <div class="feature-item">
+              <h3>Fresh Daily</h3>
+              <p>
+                All our seafood is delivered fresh daily from the best sources.
+              </p>
+            </div>
+            <div class="feature-item">
+              <h3>Sustainable</h3>
+              <p>
+                We support sustainable fishing practices to protect our oceans.
+              </p>
+            </div>
+            <div class="feature-item">
+              <h3>Quality Guaranteed</h3>
+              <p>100% satisfaction guarantee on all our products.</p>
+            </div>
+          </div>
+
+          <h2 class="features_for">For Sellers</h2>
+          <div class="features">
+            <div class="feature-item">
+              <h3>Improve Your Reach</h3>
+              <p>Get people from all over Goa to discover your catch.</p>
+            </div>
+            <div class="feature-item">
+              <h3>Free Advertisement</h3>
+              <p>Just post your catch and let others know what you have.</p>
+            </div>
+            <div class="feature-item">
+              <h3>Improve your sales</h3>
+              <p>You could significantly improve your sales</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="cta-section">
+        <div class="container">
+          <div class="cta-content">
+            <h2 class="section-title">Create Your Fishmart Account</h2>
+            <div class="cta-benefits">
+              <div class="benefit-item">
+                <h4>For Buyers</h4>
+                <p>
+                  Access fresh daily catches, compare prices, and get the best
+                  seafood delivered to your door.
+                </p>
+              </div>
+              <div class="benefit-item">
+                <h4>For Suppliers</h4>
+                <p>
+                  Expand your reach, connect with more customers, and grow your
+                  seafood business effortlessly.
+                </p>
+              </div>
+            </div>
+            <div class="cta-buttons">
+              <a href="{{ url_for('signup') }}" class="cta-button primary"
+                >Start as Buyer</a
+              >
+              <a href="{{ url_for('signup') }}" class="cta-button secondary"
+                >Join as Supplier</a
+              >
+            </div>
+            <p class="cta-note">
+              Already have an account?
+              <a href="{{ url_for('login') }}" class="login-link"
+                >Sign in here</a
+              >
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="{{ url_for('static', filename='main.js') }}"></script>
+  </body>
+</html>

@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ store_owner.store_name }} - Fishmart</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='styles.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='products.css') }}"
+    />
+        <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='store.css') }}"
+    />
+  </head>
+  <body>
+    <!-- Navbar -->
+    <nav class="navbar">
+      <div class="navbar-container">
+        <!-- Logo -->
+        <div class="navbar-brand">
+          <a href="{{ url_for('index') }}" class="brand-link">Fishmart</a>
+        </div>
+
+        <!-- Menu Items (Desktop) -->
+        <ul class="navbar-menu">
+          {% if current_user.is_authenticated %}
+          <li class="navbar-item">
+            <a href="{{ url_for('products') }}" class="navbar-link">Products</a>
+          </li>
+          {% if current_user.is_fisherman() %}
+          <li class="navbar-item">
+            <a href="{{ url_for('post_product') }}" class="navbar-link"
+              >Post Product</a
+            >
+          </li>
+          {% endif %}
+          <li class="navbar-item">
+            <a href="{{ url_for('logout') }}" class="navbar-link">Logout</a>
+          </li>
+          {% else %}
+          <li class="navbar-item">
+            <a href="{{ url_for('index') }}" class="navbar-link">Home</a>
+          </li>
+          <li class="navbar-item">
+            <a href="{{ url_for('products') }}" class="navbar-link">Products</a>
+          </li>
+          <li class="navbar-item">
+            <a href="{{ url_for('login') }}" class="navbar-link">Login</a>
+          </li>
+          <li class="navbar-item">
+            <a href="{{ url_for('signup') }}" class="navbar-link">Sign Up</a>
+          </li>
+          <li class="navbar-item">
+            <a href="{{ url_for('fisherman_signup') }}" class="navbar-link"
+              >Join as Fisherman</a
+            >
+          </li>
+          {% endif %}
+        </ul>
+
+        <!-- Mobile Menu Button -->
+        <div class="mobile-menu-toggle" id="mobile-menu-toggle">
+          <span class="bar"></span>
+          <span class="bar"></span>
+          <span class="bar"></span>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Mobile Sidebar -->
+    <div class="mobile-sidebar" id="mobile-sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-brand">Fishmart</div>
+        <button class="sidebar-close" id="sidebar-close">&times;</button>
+      </div>
+      <ul class="sidebar-menu">
+        {% if current_user.is_authenticated %}
+          <li class="sidebar-item">
+            <a href="{{ url_for('products') }}" class="sidebar-link">Products</a>
+          </li>
+          {% if current_user.is_fisherman() %}
+            <li class="sidebar-item">
+              <a href="{{ url_for('post_product') }}" class="sidebar-link">Post Product</a>
+            </li>
+          {% endif %}
+          <li class="sidebar-item">
+            <a href="{{ url_for('logout') }}" class="sidebar-link">Logout</a>
+          </li>
+        {% else %}
+          <li class="sidebar-item">
+            <a href="{{ url_for('index') }}" class="sidebar-link">Home</a>
+          </li>
+          <li class="sidebar-item">
+            <a href="{{ url_for('products') }}" class="sidebar-link">Products</a>
+          </li>
+          <li class="sidebar-item">
+            <a href="{{ url_for('login') }}" class="sidebar-link">Login</a>
+          </li>
+          <li class="sidebar-item">
+            <a href="{{ url_for('signup') }}" class="sidebar-link">Sign Up</a>
+          </li>
+          <li class="sidebar-item">
+            <a href="{{ url_for('fisherman_signup') }}" class="sidebar-link">Join as Fisherman</a>
+          </li>
+        {% endif %}
+      </ul>
+    </div>
+
+    <!-- Overlay for mobile sidebar -->
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+    <!-- Store Header -->
+    <div class="store-header">
+      <h1 class="store-name">{{ store_owner.store_name }}</h1>
+      <div class="store-location">
+        {{ store_owner.store_location }}, {{ store_owner.store_city }}
+      </div>
+      {% if store_owner.get_store_rating() %}
+      <div class="store-rating">
+        {{ store_owner.get_store_rating() }}/5
+        <span>({{ store_owner.get_review_count() }} reviews)</span>
+      </div>
+      {% else %}
+      <div class="store-rating">No reviews yet</div>
+      {% endif %}
+    </div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <div class="store-content">
+        <a href="{{ url_for('products') }}" class="back-button">
+          Back to Products
+        </a>
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %} {% if
+        messages %}
+        <div class="flash-messages">
+          {% for category, message in messages %}
+          <div class="flash-message flash-{{ category }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+        {% endif %} {% endwith %}
+
+        <!-- Store Products -->
+        <h2 class="section-title">Products</h2>
+        {% if products %}
+        <div class="products-grid">
+          {% for product in products %}
+          <div
+            class="product-card"
+            onclick="location.href='{{ url_for('product_detail', product_id=product.id) }}'"
+            style="cursor: pointer"
+          >
+            <div class="product-image">
+              {% if product.image_filename %}
+              <img
+                src="{{ url_for('static', filename='uploads/' + product.image_filename) }}"
+                alt="{{ product.title }}"
+              />
+              {% else %}
+              <div class="product-placeholder">
+                <span>No Image</span>
+              </div>
+              {% endif %}
+            </div>
+            <div class="product-content">
+              <h3 class="product-title">{{ product.title }}</h3>
+              <div class="product-price">
+                ₹{{ "%.2f"|format(product.price) }}
+              </div>
+              {% if product.quantity > 1 %}
+              <div class="product-quantity">
+                Quantity: {{ product.quantity }}
+              </div>
+              {% endif %}
+              <div class="product-city">{{ product.city }}</div>
+              {% if product.description %}
+              <div class="product-description">
+                {{ product.description[:100] }}{% if product.description|length
+                > 100 %}...{% endif %}
+              </div>
+              {% endif %}
+              <div class="product-timestamp">
+                Listed {{ product.created_at.strftime('%B %d, %Y') }}
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        {% else %}
+        <div class="no-products">
+          <p>This store hasn't posted any products yet.</p>
+        </div>
+        {% endif %}
+
+        <!-- Review Section -->
+        {% if current_user.id != store_owner.id %}
+        <h2 class="section-title">Leave a Review</h2>
+        <div class="review-form">
+          {% if existing_review %}
+          <div class="existing-review-notice">
+            <strong>You have already reviewed this store.</strong> You can
+            update your review below.
+          </div>
+          {% endif %}
+
+          <form
+            method="POST"
+            action="{{ url_for('add_store_review', store_owner_id=store_owner.id) }}"
+          >
+            <div class="form-group">
+              <label>Rating:</label>
+              <div class="rating-input">
+                {% for i in range(5, 0, -1) %} <input type="radio" id="star{{ i
+                }}" name="rating" value="{{ i }}" {% if existing_review and
+                existing_review.rating == i %}checked{% endif %}>
+                <label for="star{{ i }}">★</label>
+                {% endfor %}
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="review_text">Review (optional):</label>
+              <textarea
+                id="review_text"
+                name="review_text"
+                placeholder="Share your experience with this store..."
+              >
+{% if existing_review %}{{ existing_review.review_text }}{% endif %}</textarea
+              >
+            </div>
+
+            <button type="submit" class="btn-submit">
+              {% if existing_review %}Update Review{% else %}Submit Review{%
+              endif %}
+            </button>
+          </form>
+        </div>
+        {% endif %}
+
+        <!-- Reviews Display -->
+        <h2 class="section-title">Customer Reviews</h2>
+        {% if reviews %} {% for review in reviews %}
+        <div class="review-item">
+          <div class="review-header">
+            <div>
+              <div class="reviewer-name">{{ review.reviewer.username }}</div>
+              <div class="review-date">
+                {{ review.created_at.strftime('%B %d, %Y') }}
+              </div>
+            </div>
+            <div class="review-rating">
+              {% for i in range(review.rating) %}★{% endfor %} {% for i in
+              range(5 - review.rating) %}☆{% endfor %}
+            </div>
+          </div>
+          {% if review.review_text %}
+          <div class="review-text">{{ review.review_text }}</div>
+          {% endif %}
+        </div>
+        {% endfor %} {% else %}
+        <div class="no-reviews">
+          <p>No reviews yet. Be the first to review this store!</p>
+        </div>
+        {% endif %}
+      </div>
+    </main>
+
+    <script src="{{ url_for('static', filename='main.js') }}"></script>
+    <script>
+      // Rating stars interaction
+      const ratingInputs = document.querySelectorAll(
+        '.rating-input input[type="radio"]'
+      );
+      const ratingLabels = document.querySelectorAll(".rating-input label");
+
+      // Function to highlight stars based on rating
+      function highlightStars(rating) {
+        ratingLabels.forEach((label, index) => {
+          const starValue = parseInt(ratingInputs[index].value);
+          if (starValue <= rating) {
+            label.style.color = "#ffd700";
+          } else {
+            label.style.color = "#ddd";
+          }
+        });
+      }
+
+      // Add event listeners
+      ratingLabels.forEach((label, index) => {
+        const starValue = parseInt(ratingInputs[index].value);
+
+        label.addEventListener("mouseover", () => {
+          highlightStars(starValue);
+        });
+
+        label.addEventListener("mouseout", () => {
+          // Reset to checked state
+          const checkedInput = document.querySelector(
+            '.rating-input input[type="radio"]:checked'
+          );
+          if (checkedInput) {
+            highlightStars(parseInt(checkedInput.value));
+          } else {
+            highlightStars(0);
+          }
+        });
+
+        label.addEventListener("click", () => {
+          ratingInputs[index].checked = true;
+          highlightStars(starValue);
+        });
+      });
+
+      // Initialize with existing rating
+      const checkedInput = document.querySelector(
+        '.rating-input input[type="radio"]:checked'
+      );
+      if (checkedInput) {
+        highlightStars(parseInt(checkedInput.value));
+      }
+    </script>
+  </body>
+</html>

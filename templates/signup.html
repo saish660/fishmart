@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sign Up - Fishmart</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='styles.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='auth.css') }}"
+    />
+  </head>
+  <body>
+    <!-- Navbar -->
+    <nav class="navbar">
+      <div class="navbar-container">
+        <!-- Logo -->
+        <div class="navbar-brand">
+          <a href="{{ url_for('index') }}" class="brand-link">Fishmart</a>
+        </div>
+
+        <!-- Menu Items (Desktop) -->
+        <ul class="navbar-menu">
+          <li class="navbar-item">
+            <a href="{{ url_for('index') }}" class="navbar-link">Home</a>
+          </li>
+          <li class="navbar-item">
+            <a href="{{ url_for('products') }}" class="navbar-link">Products</a>
+          </li>
+          {% if current_user.is_authenticated %} {% if
+          current_user.is_fisherman() %}
+          <li class="navbar-item">
+            <a href="{{ url_for('post_product') }}" class="navbar-link"
+              >Post Product</a
+            >
+          </li>
+          {% endif %}
+          <li class="navbar-item">
+            <a href="{{ url_for('logout') }}" class="navbar-link">Logout</a>
+          </li>
+          {% else %}
+          <li class="navbar-item">
+            <a href="{{ url_for('login') }}" class="navbar-link">Login</a>
+          </li>
+          <li class="navbar-item">
+            <a href="{{ url_for('signup') }}" class="navbar-link active"
+              >Sign Up</a
+            >
+          </li>
+          <li class="navbar-item">
+            <a href="{{ url_for('fisherman_signup') }}" class="navbar-link"
+              >Join as Fisherman</a
+            >
+          </li>
+          {% endif %}
+        </ul>
+
+        <!-- Mobile Menu Toggle -->
+        <div class="mobile-menu-toggle" id="mobile-menu-toggle">
+          <span class="bar"></span>
+          <span class="bar"></span>
+          <span class="bar"></span>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Mobile Sidebar -->
+    <div class="mobile-sidebar" id="mobile-sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-brand">Fishmart</div>
+        <button class="sidebar-close" id="sidebar-close">&times;</button>
+      </div>
+      <ul class="sidebar-menu">
+        <li class="sidebar-item">
+          <a href="{{ url_for('index') }}" class="sidebar-link">Home</a>
+        </li>
+        <li class="sidebar-item">
+          <a href="{{ url_for('products') }}" class="sidebar-link">Products</a>
+        </li>
+        {% if current_user.is_authenticated %} {% if current_user.is_fisherman()
+        %}
+        <li class="sidebar-item">
+          <a href="{{ url_for('post_product') }}" class="sidebar-link"
+            >Post Product</a
+          >
+        </li>
+        {% endif %}
+        <li class="sidebar-item">
+          <a href="{{ url_for('logout') }}" class="sidebar-link">Logout</a>
+        </li>
+        {% else %}
+        <li class="sidebar-item">
+          <a href="{{ url_for('login') }}" class="sidebar-link">Login</a>
+        </li>
+        <li class="sidebar-item">
+          <a href="{{ url_for('signup') }}" class="sidebar-link active"
+            >Sign Up</a
+          >
+        </li>
+        <li class="sidebar-item">
+          <a href="{{ url_for('fisherman_signup') }}" class="sidebar-link"
+            >Join as Fisherman</a
+          >
+        </li>
+        {% endif %}
+      </ul>
+    </div>
+
+    <!-- Overlay for mobile sidebar -->
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <section class="auth-section">
+        <div class="auth-container">
+          <div class="auth-card">
+            <div class="auth-header">
+              <h1 class="auth-title">Create Account</h1>
+              <p class="auth-subtitle">
+                Join Fishmart for the freshest seafood experience
+              </p>
+            </div>
+
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %} {%
+            if messages %}
+            <div class="flash-messages">
+              {% for category, message in messages %}
+              <div class="flash-message flash-{{ category }}">
+                {{ message }}
+              </div>
+              {% endfor %}
+            </div>
+            {% endif %} {% endwith %}
+
+            <form
+              class="auth-form"
+              method="POST"
+              action="{{ url_for('signup') }}"
+            >
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="firstName">First Name</label>
+                  <input
+                    type="text"
+                    id="firstName"
+                    name="firstName"
+                    required
+                    placeholder="Enter your first name"
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="lastName">Last Name</label>
+                  <input
+                    type="text"
+                    id="lastName"
+                    name="lastName"
+                    required
+                    placeholder="Enter your last name"
+                  />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="email">Email Address</label>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  required
+                  placeholder="Enter your email"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="password">Password</label>
+                <div class="password-field">
+                  <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    required
+                    placeholder="Create a password"
+                  />
+                  <button
+                    type="button"
+                    class="password-toggle"
+                    id="passwordToggle"
+                  >
+                    <span class="password-toggle-text">Show</span>
+                  </button>
+                </div>
+                <div class="password-requirements">
+                  <small>Password must be at least 8 characters long</small>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="confirmPassword">Confirm Password</label>
+                <div class="password-field">
+                  <input
+                    type="password"
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    required
+                    placeholder="Confirm your password"
+                  />
+                  <button
+                    type="button"
+                    class="password-toggle"
+                    id="confirmPasswordToggle"
+                  >
+                    <span class="password-toggle-text">Show</span>
+                  </button>
+                </div>
+              </div>
+
+              <button type="submit" class="auth-button">Create Account</button>
+
+              <div class="auth-divider">
+                <span>or</span>
+              </div>
+
+              <div class="auth-footer">
+                <p>
+                  Want to sell your catch?
+                  <a href="{{ url_for('fisherman_signup') }}" class="auth-link"
+                    >Join as Fisherman</a
+                  >
+                </p>
+                <p>
+                  Already have an account?
+                  <a href="{{ url_for('login') }}" class="auth-link"
+                    >Sign in here</a
+                  >
+                </p>
+              </div>
+            </form>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="{{ url_for('static', filename='main.js') }}"></script>
+  </body>
+</html>

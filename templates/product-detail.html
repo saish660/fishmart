@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ product.title }} - Fishmart</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='styles.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='products.css') }}"
+    />
+    <style>
+      .product-detail {
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 3rem;
+        align-items: start;
+      }
+
+      .product-image-detail {
+        width: 100%5
+        border-radius: 12px;
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #f8f9fa;
+      }
+
+      .product-image-detail img {
+        max-width: 100%;
+        max-height: 500px;
+        display: block;
+      }
+
+      .product-placeholder-detail {
+        width: 100%;
+        height: 300px;
+        background: #f5f5f5;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #999;
+        font-size: 1.2rem;
+      }
+
+      .product-info {
+        padding: 1rem 0;
+      }
+
+      main .product-title-detail {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #2c3e50;
+        text-align: left;
+        margin-bottom: 1rem;
+      }
+
+      .product-price-detail {
+        font-size: 1.8rem;
+        font-weight: bold;
+        color: #27ae60;
+        margin-bottom: 1rem;
+      }
+
+      .product-meta {
+        display: grid;
+        gap: 0.8rem;
+        margin-bottom: 2rem;
+      }
+
+      .meta-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 1rem;
+        color: #555;
+      }
+
+      .meta-label {
+        font-weight: 600;
+        min-width: 80px;
+      }
+
+      .product-description-detail {
+        background: #f8f9fa;
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin-bottom: 2rem;
+      }
+
+      .seller-info {
+        background: white;
+        border: 2px solid #e9ecef;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+      }
+
+      .seller-header {
+        display: flex;
+        justify-content: between;
+        align-items: center;
+        margin-bottom: 1rem;
+      }
+
+      .back-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: #6c757d;
+        color: white;
+        padding: 0.75rem 1.5rem;
+        text-decoration: none;
+        border-radius: 6px;
+        transition: background-color 0.3s;
+        margin-bottom: 2rem;
+        margin-left: 15px;
+      }
+
+      .back-button:hover {
+        background: #5a6268;
+        color: white;
+      }
+
+      .store-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: #759342ff;
+        color: white;
+        padding: 0.75rem 1.5rem;
+        margin-left: 20px;
+        text-decoration: none;
+        border-radius: 6px;
+        transition: background-color 0.3s;
+      }
+
+      .store-button:hover {
+        background: #3e4e22ff;
+        color: white;
+      }
+
+      @media (max-width: 768px) {
+        .product-detail {
+          grid-template-columns: 1fr;
+          gap: 2rem;
+        }
+
+        .product-title-detail {
+          font-size: 1.5rem;
+        }
+
+        .product-price-detail {
+          font-size: 1.4rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navbar -->
+    <nav class="navbar">
+      <div class="navbar-container">
+        <!-- Logo -->
+        <div class="navbar-brand">
+          <a href="{{ url_for('index') }}" class="brand-link">Fishmart</a>
+        </div>
+
+        <!-- Menu Items (Desktop) -->
+        <ul class="navbar-menu">
+          {% if current_user.is_authenticated %}
+          <li class="navbar-item">
+            <a href="{{ url_for('products') }}" class="navbar-link">Products</a>
+          </li>
+          {% if current_user.is_fisherman() %}
+          <li class="navbar-item">
+            <a href="{{ url_for('post_product') }}" class="navbar-link"
+              >Post Product</a
+            >
+          </li>
+          {% endif %}
+          <li class="navbar-item">
+            <a href="{{ url_for('logout') }}" class="navbar-link">Logout</a>
+          </li>
+          {% else %}
+          <li class="navbar-item">
+            <a href="{{ url_for('index') }}" class="navbar-link">Home</a>
+          </li>
+          <li class="navbar-item">
+            <a href="{{ url_for('products') }}" class="navbar-link">Products</a>
+          </li>
+          <li class="navbar-item">
+            <a href="{{ url_for('login') }}" class="navbar-link">Login</a>
+          </li>
+          <li class="navbar-item">
+            <a href="{{ url_for('signup') }}" class="navbar-link">Sign Up</a>
+          </li>
+          <li class="navbar-item">
+            <a href="{{ url_for('fisherman_signup') }}" class="navbar-link"
+              >Join as Fisherman</a
+            >
+          </li>
+          {% endif %}
+        </ul>
+
+        <!-- Mobile Menu Button -->
+        <div class="mobile-menu-toggle" id="mobile-menu-toggle">
+          <span class="bar"></span>
+          <span class="bar"></span>
+          <span class="bar"></span>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Mobile Sidebar -->
+    <div class="mobile-sidebar" id="mobile-sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-brand">Fishmart</div>
+        <button class="sidebar-close" id="sidebar-close">&times;</button>
+      </div>
+      <ul class="sidebar-menu">
+        {% if current_user.is_authenticated %}
+        <li class="sidebar-item">
+          <a href="{{ url_for('products') }}" class="sidebar-link">Products</a>
+        </li>
+        {% if current_user.is_fisherman() %}
+        <li class="sidebar-item">
+          <a href="{{ url_for('post_product') }}" class="sidebar-link"
+            >Post Product</a
+          >
+        </li>
+        {% endif %}
+        <li class="sidebar-item">
+          <a href="{{ url_for('logout') }}" class="sidebar-link">Logout</a>
+        </li>
+        {% else %}
+        <li class="sidebar-item">
+          <a href="{{ url_for('index') }}" class="sidebar-link">Home</a>
+        </li>
+        <li class="sidebar-item">
+          <a href="{{ url_for('products') }}" class="sidebar-link">Products</a>
+        </li>
+        <li class="sidebar-item">
+          <a href="{{ url_for('login') }}" class="sidebar-link">Login</a>
+        </li>
+        <li class="sidebar-item">
+          <a href="{{ url_for('signup') }}" class="sidebar-link">Sign Up</a>
+        </li>
+        <li class="sidebar-item">
+          <a href="{{ url_for('fisherman_signup') }}" class="sidebar-link"
+            >Join as Fisherman</a
+          >
+        </li>
+        {% endif %}
+      </ul>
+    </div>
+
+    <!-- Overlay for mobile sidebar -->
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <section class="page-section">
+        <a href="{{ url_for('products') }}" class="back-button">
+          Back to Products
+        </a>
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %} {% if
+        messages %}
+        <div class="flash-messages">
+          {% for category, message in messages %}
+          <div class="flash-message flash-{{ category }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+        {% endif %} {% endwith %}
+
+        <div class="product-detail">
+          <div class="product-image-detail">
+            {% if product.image_filename %}
+            <img
+              src="{{ url_for('static', filename='uploads/' + product.image_filename) }}"
+              alt="{{ product.title }}"
+            />
+            {% else %}
+            <div class="product-placeholder-detail">
+              <span>No Image Available</span>
+            </div>
+            {% endif %}
+          </div>
+
+          <div class="product-info">
+            <h1 class="product-title-detail">{{ product.title }}</h1>
+            <div class="product-price-detail">
+              ₹{{ "%.2f"|format(product.price) }}
+            </div>
+
+            <div class="product-meta">
+              {% if product.quantity > 1 %}
+              <div class="meta-item">
+                <span class="meta-label">Quantity:</span>
+                <span
+                  >{{ product.quantity }} for ₹{{ "%.2f"|format(product.price)
+                  }}</span
+                >
+              </div>
+              {% endif %}
+
+              <div class="meta-item">
+                <span class="meta-label">Location:</span>
+                <span>{{ product.city }}</span>
+              </div>
+
+              <div class="meta-item">
+                <span class="meta-label">Listed:</span>
+                <span
+                  >{{ product.created_at.strftime('%B %d, %Y at %I:%M %p')
+                  }}</span
+                >
+              </div>
+            </div>
+
+            {% if product.description %}
+            <div class="product-description-detail">
+              <p>{{ product.description }}</p>
+            </div>
+            {% endif %}
+
+            <div class="seller-info">
+              <div class="seller-header">
+                <h3>Seller Information</h3>
+                {% if product.user.is_fisherman() %}
+                <a
+                  href="{{ url_for('store_page', store_owner_id=product.user.id) }}"
+                  class="store-button"
+                >
+                  Visit Store
+                </a>
+                {% endif %}
+              </div>
+
+              {% if product.user.is_fisherman() %}
+              <div class="meta-item">
+                <span class="meta-label">Store:</span>
+                <strong>{{ product.user.store_name }}</strong>
+              </div>
+              <div class="meta-item">
+                <span class="meta-label">Location:</span>
+                <span>
+                  {{ product.user.store_location }}, {{ product.user.store_city
+                  }}</span
+                >
+              </div>
+              <div class="meta-item">
+                <span class="meta-label">Contact:</span>
+                <span>{{ product.user.username }}</span>
+              </div>
+              {% if product.user.get_store_rating() %}
+              <div class="meta-item">
+                <span class="meta-label">Rating:</span>
+                <span
+                  >{{ product.user.get_store_rating() }}/5 ({{
+                  product.user.get_review_count() }} reviews)</span
+                >
+              </div>
+              {% endif %} {% else %}
+              <div class="meta-item">
+                <span class="meta-label">Seller:</span>
+                <span>{{ product.user.username }}</span>
+              </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="{{ url_for('static', filename='main.js') }}"></script>
+  </body>
+</html>
