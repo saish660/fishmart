@@ -73,7 +73,6 @@ main {
 }
 
 .product-price::before {
-  content: "₹";
   margin-right: 6px;
 }
 

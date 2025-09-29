@@ -60,7 +60,7 @@ body {
   top: 10px;
   left: 50%;
   transform: translate(-50%);
-  z-index: 9;
+  z-index: 999;
   background: rgba(67, 80, 44, 1);
   border-radius: 15px;
   width: 90%;

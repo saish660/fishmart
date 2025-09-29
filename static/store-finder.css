@@ -1,0 +1,65 @@
+/* Store Finder page specific styles */
+.finder-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 10px 0 14px;
+}
+
+.control-group {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.control-group.small label {
+  color: #334155;
+  font-size: 0.95rem;
+}
+
+.finder-input {
+  flex: 1 1 420px;
+  min-width: 220px;
+  padding: 10px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+}
+
+.finder-select {
+  padding: 8px 10px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+}
+
+.btn-secondary {
+  background: #f1f5f9;
+  color: #0f172a;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 10px 12px;
+  cursor: pointer;
+}
+.btn-secondary:hover {
+  background: #e2e8f0;
+}
+
+/* Card list uses products-grid styling */
+#store-cards .product-card {
+  cursor: pointer;
+}
+
+.store-meta {
+  color: #475569;
+  font-size: 0.95rem;
+}
+
+.distance-chip {
+  display: inline-block;
+  background: #e2e8f0;
+  color: #0f172a;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+}

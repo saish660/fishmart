@@ -4,6 +4,13 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{{ store_owner.store_name }} - Fishmart</title>
+    <!-- Leaflet CSS for map -->
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      crossorigin=""
+    />
     <link
       rel="stylesheet"
       href="{{ url_for('static', filename='styles.css') }}"
@@ -12,9 +19,13 @@
       rel="stylesheet"
       href="{{ url_for('static', filename='products.css') }}"
     />
-        <link
+    <link
       rel="stylesheet"
       href="{{ url_for('static', filename='store.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='location-picker.css') }}"
     />
   </head>
   <body>
@@ -31,6 +42,9 @@
           {% if current_user.is_authenticated %}
           <li class="navbar-item">
             <a href="{{ url_for('products') }}" class="navbar-link">Products</a>
+          </li>
+          <li class="navbar-item">
+            <a href="{{ url_for('store_finder') }}" class="navbar-link">Find Stores</a>
           </li>
           {% if current_user.is_fisherman() %}
           <li class="navbar-item">
@@ -80,33 +94,40 @@
       </div>
       <ul class="sidebar-menu">
         {% if current_user.is_authenticated %}
-          <li class="sidebar-item">
-            <a href="{{ url_for('products') }}" class="sidebar-link">Products</a>
-          </li>
-          {% if current_user.is_fisherman() %}
-            <li class="sidebar-item">
-              <a href="{{ url_for('post_product') }}" class="sidebar-link">Post Product</a>
-            </li>
-          {% endif %}
-          <li class="sidebar-item">
-            <a href="{{ url_for('logout') }}" class="sidebar-link">Logout</a>
-          </li>
+        <li class="sidebar-item">
+          <a href="{{ url_for('products') }}" class="sidebar-link">Products</a>
+        </li>
+        <li class="sidebar-item">
+          <a href="{{ url_for('store_finder') }}" class="sidebar-link">Find Stores</a>
+        </li>
+        {% if current_user.is_fisherman() %}
+        <li class="sidebar-item">
+          <a href="{{ url_for('post_product') }}" class="sidebar-link"
+            >Post Product</a
+          >
+        </li>
+        {% endif %}
+        <li class="sidebar-item">
+          <a href="{{ url_for('logout') }}" class="sidebar-link">Logout</a>
+        </li>
         {% else %}
-          <li class="sidebar-item">
-            <a href="{{ url_for('index') }}" class="sidebar-link">Home</a>
-          </li>
-          <li class="sidebar-item">
-            <a href="{{ url_for('products') }}" class="sidebar-link">Products</a>
-          </li>
-          <li class="sidebar-item">
-            <a href="{{ url_for('login') }}" class="sidebar-link">Login</a>
-          </li>
-          <li class="sidebar-item">
-            <a href="{{ url_for('signup') }}" class="sidebar-link">Sign Up</a>
-          </li>
-          <li class="sidebar-item">
-            <a href="{{ url_for('fisherman_signup') }}" class="sidebar-link">Join as Fisherman</a>
-          </li>
+        <li class="sidebar-item">
+          <a href="{{ url_for('index') }}" class="sidebar-link">Home</a>
+        </li>
+        <li class="sidebar-item">
+          <a href="{{ url_for('products') }}" class="sidebar-link">Products</a>
+        </li>
+        <li class="sidebar-item">
+          <a href="{{ url_for('login') }}" class="sidebar-link">Login</a>
+        </li>
+        <li class="sidebar-item">
+          <a href="{{ url_for('signup') }}" class="sidebar-link">Sign Up</a>
+        </li>
+        <li class="sidebar-item">
+          <a href="{{ url_for('fisherman_signup') }}" class="sidebar-link"
+            >Join as Fisherman</a
+          >
+        </li>
         {% endif %}
       </ul>
     </div>
@@ -146,6 +167,44 @@
           {% endfor %}
         </div>
         {% endif %} {% endwith %}
+
+        <!-- Store Location -->
+        {% if store_owner.store_latitude and store_owner.store_longitude %}
+        <h2 class="section-title">Store Location</h2>
+        <div class="form-section" style="margin-bottom: 20px">
+          <div
+            id="store-map"
+            class="map-container"
+            aria-label="Map with store location"
+            data-lat="{{ store_owner.store_latitude }}"
+            data-lng="{{ store_owner.store_longitude }}"
+            data-address="{{ store_owner.store_address or store_owner.store_location or '' }}"
+            data-city="{{ store_owner.store_city or '' }}"
+            data-name="{{ store_owner.store_name or 'Store' }}"
+          ></div>
+          <div class="map-readout">
+            <div><strong>Latitude:</strong> <span id="store-lat">—</span></div>
+            <div><strong>Longitude:</strong> <span id="store-lng">—</span></div>
+            <div class="address-line">
+              <strong>Address:</strong> <span id="store-address">—</span>
+            </div>
+          </div>
+          <div
+            id="store-map-note"
+            style="color: #475569; font-size: 0.9rem"
+          ></div>
+          <div style="margin-top: 6px">
+            <a
+              id="open-osm-link"
+              href="#"
+              target="_blank"
+              rel="noopener"
+              style="font-size: 0.95rem"
+              >Open in OpenStreetMap</a
+            >
+          </div>
+        </div>
+        {% endif %}
 
         <!-- Store Products -->
         <h2 class="section-title">Products</h2>
@@ -271,8 +330,18 @@
         {% endif %}
       </div>
     </main>
-
-    <script src="{{ url_for('static', filename='main.js') }}"></script>
+    <!-- Leaflet JS for map -->
+    <script
+      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+      crossorigin=""
+      defer
+    ></script>
+    <script
+      src="{{ url_for('static', filename='store-map.js') }}"
+      defer
+    ></script>
+    <script src="{{ url_for('static', filename='main.js') }}" defer></script>
     <script>
       // Rating stars interaction
       const ratingInputs = document.querySelectorAll(

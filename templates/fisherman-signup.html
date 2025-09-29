@@ -4,6 +4,13 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Fisherman Sign Up - Fishmart</title>
+    <!-- Leaflet CSS -->
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      crossorigin=""
+    />
     <link
       rel="stylesheet"
       href="{{ url_for('static', filename='styles.css') }}"
@@ -11,6 +18,10 @@
     <link
       rel="stylesheet"
       href="{{ url_for('static', filename='auth.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='location-picker.css') }}"
     />
   </head>
   <body>
@@ -243,6 +254,58 @@
                     placeholder="e.g., Mumbai, Goa, Kerala"
                   />
                 </div>
+
+                <!-- Shop Location Picker -->
+                <div class="form-section">
+                  <h3 class="section-title">Shop Location Picker</h3>
+                  <div class="form-group">
+                    <label for="addressSearch">Search Shop Address</label>
+                    <input
+                      type="text"
+                      id="addressSearch"
+                      name="addressSearch"
+                      placeholder="Search address or place (powered by OpenStreetMap)"
+                      list="addressSuggestions"
+                      autocomplete="off"
+                    />
+                    <datalist id="addressSuggestions"></datalist>
+                  </div>
+
+                  <div class="form-actions-row">
+                    <button
+                      type="button"
+                      id="detectLocationBtn"
+                      class="secondary-button"
+                    >
+                      Detect My Location
+                    </button>
+                  </div>
+
+                  <div
+                    id="shop-map"
+                    class="map-container"
+                    aria-label="Shop location map"
+                  ></div>
+
+                  <div class="map-readout">
+                    <div>
+                      <strong>Latitude:</strong> <span id="current-lat">—</span>
+                    </div>
+                    <div>
+                      <strong>Longitude:</strong>
+                      <span id="current-lng">—</span>
+                    </div>
+                    <div class="address-line">
+                      <strong>Address:</strong>
+                      <span id="current-address">—</span>
+                    </div>
+                  </div>
+
+                  <!-- Hidden inputs submitted with the form -->
+                  <input type="hidden" name="latitude" id="latitude" />
+                  <input type="hidden" name="longitude" id="longitude" />
+                  <input type="hidden" name="address" id="address" />
+                </div>
               </div>
 
               <button type="submit" class="auth-button">
@@ -273,6 +336,18 @@
       </section>
     </main>
 
-    <script src="{{ url_for('static', filename='main.js') }}"></script>
+    <!-- Leaflet JS -->
+    <script
+      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+      crossorigin=""
+      defer
+    ></script>
+    <!-- Location Picker logic -->
+    <script
+      src="{{ url_for('static', filename='location-picker.js') }}"
+      defer
+    ></script>
+    <script src="{{ url_for('static', filename='main.js') }}" defer></script>
   </body>
 </html>

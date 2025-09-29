@@ -5,6 +5,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 import os
 from datetime import datetime
+from sqlalchemy import text
 
 
 app = Flask(__name__)
@@ -40,6 +41,10 @@ class User(UserMixin, db.Model):
     store_name = db.Column(db.String(150), nullable=True)
     store_location = db.Column(db.String(200), nullable=True)
     store_city = db.Column(db.String(100), nullable=True)
+    # Precise geolocation and full address (optional)
+    store_latitude = db.Column(db.Float, nullable=True)
+    store_longitude = db.Column(db.Float, nullable=True)
+    store_address = db.Column(db.Text, nullable=True)
 
     def __repr__(self):
         return f'<User {self.email}>'
@@ -208,6 +213,21 @@ def fisherman_signup():
         store_name = request.form.get("storeName", "").strip()
         store_location = request.form.get("storeLocation", "").strip()
         store_city = request.form.get("storeCity", "").strip()
+        # Location picker hidden inputs
+        lat_raw = request.form.get("latitude")
+        lng_raw = request.form.get("longitude")
+        addr_full = request.form.get("address", "").strip()
+        try:
+            store_lat = float(lat_raw) if lat_raw not in (None, "") else None
+        except ValueError:
+            store_lat = None
+        try:
+            store_lng = float(lng_raw) if lng_raw not in (None, "") else None
+        except ValueError:
+            store_lng = None
+        # If address provided and store_location empty, use address as store_location (truncate to 200)
+        if addr_full and not store_location:
+            store_location = addr_full[:200]
         
         if not all([first_name, last_name, email, password, store_name, store_location, store_city]):
             flash("All fields are required", "error")
@@ -226,7 +246,10 @@ def fisherman_signup():
                 user_type='fisherman',
                 store_name=store_name,
                 store_location=store_location,
-                store_city=store_city
+                store_city=store_city,
+                store_latitude=store_lat,
+                store_longitude=store_lng,
+                store_address=addr_full or None
             )
             db.session.add(new_user)
             db.session.commit()
@@ -330,6 +353,27 @@ def store_page(store_owner_id):
                          reviews=reviews, 
                          existing_review=existing_review)
 
+@app.route("/stores")
+@login_required
+def store_finder():
+    """Buyer section: show all stores on a map with cards below."""
+    fishermen = User.query.filter_by(user_type='fisherman').all()
+    stores = []
+    for u in fishermen:
+        stores.append({
+            'id': u.id,
+            'name': u.store_name or u.username,
+            'city': u.store_city,
+            'location': u.store_location,
+            'address': u.store_address,
+            'lat': u.store_latitude,
+            'lng': u.store_longitude,
+            'rating': u.get_store_rating(),
+            'reviews': u.get_review_count(),
+            'product_count': len(getattr(u, 'products', []) or []),
+        })
+    return render_template("store-finder.html", stores=stores)
+
 @app.route("/store/<int:store_owner_id>/review", methods=["POST"])
 @login_required
 def add_store_review(store_owner_id):
@@ -394,4 +438,22 @@ if __name__ == "__main__":
     with app.app_context():
         db.create_all()  # Creates database tables if they don't exist
         print("Database tables created successfully!")
+        # Lightweight migration for new columns if they don't exist (SQLite only)
+        try:
+            engine = db.engine
+            with engine.connect() as con:
+                # Check existing columns in User table
+                res = con.execute(text("PRAGMA table_info(user)")).fetchall()
+                cols = {row[1] for row in res}
+                if 'store_latitude' not in cols:
+                    con.execute(text("ALTER TABLE user ADD COLUMN store_latitude REAL"))
+                    print("Added column: user.store_latitude")
+                if 'store_longitude' not in cols:
+                    con.execute(text("ALTER TABLE user ADD COLUMN store_longitude REAL"))
+                    print("Added column: user.store_longitude")
+                if 'store_address' not in cols:
+                    con.execute(text("ALTER TABLE user ADD COLUMN store_address TEXT"))
+                    print("Added column: user.store_address")
+        except Exception as e:
+            print("Migration check failed or not applicable:", e)
     app.run(debug=True, host="0.0.0.0", port=5000)
