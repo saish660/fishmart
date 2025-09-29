@@ -179,7 +179,9 @@
             <a href="{{ url_for('products') }}" class="navbar-link">Products</a>
           </li>
           <li class="navbar-item">
-            <a href="{{ url_for('store_finder') }}" class="navbar-link">Find Stores</a>
+            <a href="{{ url_for('store_finder') }}" class="navbar-link"
+              >Find Stores</a
+            >
           </li>
           {% if current_user.is_fisherman() %}
           <li class="navbar-item">
@@ -233,7 +235,9 @@
           <a href="{{ url_for('products') }}" class="sidebar-link">Products</a>
         </li>
         <li class="sidebar-item">
-          <a href="{{ url_for('store_finder') }}" class="sidebar-link">Find Stores</a>
+          <a href="{{ url_for('store_finder') }}" class="sidebar-link"
+            >Find Stores</a
+          >
         </li>
         {% if current_user.is_fisherman() %}
         <li class="sidebar-item">

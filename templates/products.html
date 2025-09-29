@@ -26,10 +26,14 @@
         <ul class="navbar-menu">
           {% if current_user.is_authenticated %}
           <li class="navbar-item">
-            <a href="{{ url_for('products') }}" class="navbar-link active">Products</a>
+            <a href="{{ url_for('products') }}" class="navbar-link active"
+              >Products</a
+            >
           </li>
           <li class="navbar-item">
-            <a href="{{ url_for('store_finder') }}" class="navbar-link">Find Stores</a>
+            <a href="{{ url_for('store_finder') }}" class="navbar-link"
+              >Find Stores</a
+            >
           </li>
           {% if current_user.is_fisherman() %}
           <li class="navbar-item">
@@ -46,10 +50,14 @@
             <a href="{{ url_for('index') }}" class="navbar-link">Home</a>
           </li>
           <li class="navbar-item">
-            <a href="{{ url_for('products') }}" class="navbar-link active">Products</a>
+            <a href="{{ url_for('products') }}" class="navbar-link active"
+              >Products</a
+            >
           </li>
           <li class="navbar-item">
-            <a href="{{ url_for('store_finder') }}" class="navbar-link">Find Stores</a>
+            <a href="{{ url_for('store_finder') }}" class="navbar-link"
+              >Find Stores</a
+            >
           </li>
           <li class="navbar-item">
             <a href="{{ url_for('login') }}" class="navbar-link">Login</a>
@@ -83,10 +91,14 @@
       <ul class="sidebar-menu">
         {% if current_user.is_authenticated %}
         <li class="sidebar-item">
-          <a href="{{ url_for('products') }}" class="sidebar-link active">Products</a>
+          <a href="{{ url_for('products') }}" class="sidebar-link active"
+            >Products</a
+          >
         </li>
         <li class="sidebar-item">
-          <a href="{{ url_for('store_finder') }}" class="sidebar-link">Find Stores</a>
+          <a href="{{ url_for('store_finder') }}" class="sidebar-link"
+            >Find Stores</a
+          >
         </li>
         {% if current_user.is_fisherman() %}
         <li class="sidebar-item">
@@ -103,10 +115,14 @@
           <a href="{{ url_for('index') }}" class="sidebar-link">Home</a>
         </li>
         <li class="sidebar-item">
-          <a href="{{ url_for('products') }}" class="sidebar-link active">Products</a>
+          <a href="{{ url_for('products') }}" class="sidebar-link active"
+            >Products</a
+          >
         </li>
         <li class="sidebar-item">
-          <a href="{{ url_for('store_finder') }}" class="sidebar-link">Find Stores</a>
+          <a href="{{ url_for('store_finder') }}" class="sidebar-link"
+            >Find Stores</a
+          >
         </li>
         <li class="sidebar-item">
           <a href="{{ url_for('login') }}" class="sidebar-link">Login</a>

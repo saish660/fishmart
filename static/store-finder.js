@@ -41,14 +41,18 @@
   }
 
   function haversineKm(aLat, aLng, bLat, bLng) {
-    function toRad(d) { return (d * Math.PI) / 180; }
+    function toRad(d) {
+      return (d * Math.PI) / 180;
+    }
     const R = 6371;
     const dLat = toRad(bLat - aLat);
     const dLng = toRad(bLng - aLng);
     const A =
       Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos(toRad(aLat)) * Math.cos(toRad(bLat)) *
-      Math.sin(dLng / 2) * Math.sin(dLng / 2);
+      Math.cos(toRad(aLat)) *
+        Math.cos(toRad(bLat)) *
+        Math.sin(dLng / 2) *
+        Math.sin(dLng / 2);
     const c = 2 * Math.atan2(Math.sqrt(A), Math.sqrt(1 - A));
     return R * c;
   }
@@ -61,7 +65,9 @@
       url.searchParams.set("lon", lng);
       url.searchParams.set("zoom", "14");
       url.searchParams.set("addressdetails", "1");
-      const resp = await fetch(url.toString(), { headers: { Accept: "application/json" } });
+      const resp = await fetch(url.toString(), {
+        headers: { Accept: "application/json" },
+      });
       if (!resp.ok) return "";
       const data = await resp.json();
       return data.display_name || "";
@@ -81,10 +87,17 @@
       url.searchParams.set("format", "jsonv2");
       url.searchParams.set("limit", "8");
       url.searchParams.set("addressdetails", "1");
-      const resp = await fetch(url.toString(), { signal: searchController.signal, headers: { Accept: "application/json" } });
+      const resp = await fetch(url.toString(), {
+        signal: searchController.signal,
+        headers: { Accept: "application/json" },
+      });
       if (!resp.ok) return [];
       const data = await resp.json();
-      return (data || []).map((x) => ({ label: x.display_name, lat: parseFloat(x.lat), lon: parseFloat(x.lon) }));
+      return (data || []).map((x) => ({
+        label: x.display_name,
+        lat: parseFloat(x.lat),
+        lon: parseFloat(x.lon),
+      }));
     } catch (e) {
       if (e.name !== "AbortError") console.warn(e);
       return [];
@@ -136,16 +149,31 @@
       card.addEventListener("click", () => {
         window.location.href = `/store/${s.id}`;
       });
-      const distKm = center && s.lat != null && s.lng != null ? haversineKm(center.lat, center.lng, s.lat, s.lng) : null;
+      const distKm =
+        center && s.lat != null && s.lng != null
+          ? haversineKm(center.lat, center.lng, s.lat, s.lng)
+          : null;
       card.innerHTML = `
         <div class="product-content">
           <h3 class="product-title">${s.name || "Store"}</h3>
           <div class="store-meta">
-            ${(s.address || s.location || "").toString()} ${s.city ? `, ${s.city}` : ""}
+            ${(s.address || s.location || "").toString()} ${
+        s.city ? `, ${s.city}` : ""
+      }
           </div>
-          ${s.rating ? `<div class="store-meta">Rating: ${s.rating}/5 (${s.reviews || 0} reviews)</div>` : ""}
+          ${
+            s.rating
+              ? `<div class="store-meta">Rating: ${s.rating}/5 (${
+                  s.reviews || 0
+                } reviews)</div>`
+              : ""
+          }
           <div class="store-meta">Products: ${s.product_count || 0}</div>
-          ${distKm != null ? `<div class="distance-chip">~${distKm.toFixed(1)} km away</div>` : ""}
+          ${
+            distKm != null
+              ? `<div class="distance-chip">~${distKm.toFixed(1)} km away</div>`
+              : ""
+          }
         </div>`;
       cardsEl.appendChild(card);
     });
@@ -155,7 +183,12 @@
     clearMarkers();
     let list = stores.slice();
     if (center && radiusKm > 0) {
-      list = list.filter((s) => s.lat != null && s.lng != null && haversineKm(center.lat, center.lng, s.lat, s.lng) <= radiusKm);
+      list = list.filter(
+        (s) =>
+          s.lat != null &&
+          s.lng != null &&
+          haversineKm(center.lat, center.lng, s.lat, s.lng) <= radiusKm
+      );
     }
     // Add markers and fit bounds
     let bounds = [];
@@ -199,30 +232,35 @@
     }
     detectBtn.disabled = true;
     detectBtn.textContent = "Detecting…";
-    navigator.geolocation.getCurrentPosition(
-      async (pos) => {
-        const { latitude: lat, longitude: lng } = pos.coords;
-        const addr = await reverseGeocode(lat, lng);
-        setCenterReadout(lat, lng, addr);
-        map.setView([lat, lng], 13, { animate: true });
-        applyFilter({ lat, lng }, parseFloat(radiusSel.value || "0"));
-      },
-      (err) => {
-        console.warn(err);
-        alert("Unable to detect your location.");
-      },
-      { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
-    ).finally(() => {
-      detectBtn.disabled = false;
-      detectBtn.textContent = "Use My Location";
-    });
+    navigator.geolocation
+      .getCurrentPosition(
+        async (pos) => {
+          const { latitude: lat, longitude: lng } = pos.coords;
+          const addr = await reverseGeocode(lat, lng);
+          setCenterReadout(lat, lng, addr);
+          map.setView([lat, lng], 13, { animate: true });
+          applyFilter({ lat, lng }, parseFloat(radiusSel.value || "0"));
+        },
+        (err) => {
+          console.warn(err);
+          alert("Unable to detect your location.");
+        },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
+      )
+      .finally(() => {
+        detectBtn.disabled = false;
+        detectBtn.textContent = "Use My Location";
+      });
   });
 
   radiusSel?.addEventListener("change", () => {
     const lat = parseFloat(centerLat.textContent);
     const lng = parseFloat(centerLng.textContent);
     const hasCenter = !Number.isNaN(lat) && !Number.isNaN(lng);
-    applyFilter(hasCenter ? { lat, lng } : null, parseFloat(radiusSel.value || "0"));
+    applyFilter(
+      hasCenter ? { lat, lng } : null,
+      parseFloat(radiusSel.value || "0")
+    );
   });
 
   // Initial: add markers for all stores and fit bounds, then render all cards
