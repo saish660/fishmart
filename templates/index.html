@@ -100,6 +100,9 @@
       </ul>
     </div>
 
+    <!-- Overlay for mobile sidebar -->
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
     <main class="main-content has-hero">
       <section class="hero-section">
         <div class="hero-background">
@@ -240,7 +243,9 @@
               <a href="{{ url_for('signup') }}" class="cta-button primary"
                 >Start as Buyer</a
               >
-              <a href="{{ url_for('signup') }}" class="cta-button secondary"
+              <a
+                href="{{ url_for('fisherman_signup') }}"
+                class="cta-button secondary"
                 >Join as Supplier</a
               >
             </div>
