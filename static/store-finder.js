@@ -6,18 +6,31 @@
   const searchInput = document.getElementById("finder-search");
   const suggestions = document.getElementById("finderSuggestions");
   const detectBtn = document.getElementById("finder-detect");
-  const radiusSel = document.getElementById("radius");
+  // Removed radius filtering
   const cardsEl = document.getElementById("store-cards");
   const centerLat = document.getElementById("center-lat");
   const centerLng = document.getElementById("center-lng");
   const centerAddr = document.getElementById("center-addr");
+  const resetBtn = document.getElementById("finder-reset");
 
   let stores = [];
   try {
-    stores = JSON.parse(mapEl.dataset.stores || "[]") || [];
+    // Prefer dataset but fall back to global var injected in template
+    const raw = mapEl.dataset.stores;
+    if (raw && raw.trim().length) {
+      stores = JSON.parse(raw) || [];
+    } else if (Array.isArray(window.FISHMART_STORES)) {
+      stores = window.FISHMART_STORES;
+    }
   } catch (e) {
-    stores = [];
+    if (Array.isArray(window.FISHMART_STORES)) {
+      stores = window.FISHMART_STORES;
+    } else {
+      console.warn("Failed to parse stores from dataset.", e);
+      stores = [];
+    }
   }
+  if (!Array.isArray(stores)) stores = [];
 
   const DEFAULT_CENTER = [20, 0];
   const DEFAULT_ZOOM = 2;
@@ -31,8 +44,10 @@
       '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
   }).addTo(map);
 
-  const markers = [];
-  const group = L.featureGroup().addTo(map);
+  // Use a MarkerClusterGroup for better performance with many stores; fallback to FeatureGroup if plugin missing
+  const clusterGroup =
+    (L.markerClusterGroup && L.markerClusterGroup()) || L.featureGroup();
+  map.addLayer(clusterGroup);
 
   function setCenterReadout(lat, lng, addr) {
     if (lat != null) centerLat.textContent = Number(lat).toFixed(6);
@@ -109,8 +124,7 @@
   }
 
   function clearMarkers() {
-    group.clearLayers();
-    markers.length = 0;
+    clusterGroup.clearLayers();
   }
 
   function addStoreMarker(s) {
@@ -124,8 +138,7 @@
         <a href="/store/${s.id}">View Store</a>
       </div>`;
     m.bindPopup(popup);
-    m.addTo(group);
-    markers.push(m);
+    clusterGroup.addLayer(m);
     return m;
   }
 
@@ -174,25 +187,19 @@
     });
   }
 
-  function applyFilter(center, radiusKm) {
+  function showAllStores(center) {
     clearMarkers();
-    let list = stores.slice();
-    if (center && radiusKm > 0) {
-      list = list.filter(
-        (s) =>
-          s.lat != null &&
-          s.lng != null &&
-          haversineKm(center.lat, center.lng, s.lat, s.lng) <= radiusKm
-      );
-    }
+    const list = stores.slice();
     // Add markers and fit bounds
-    let bounds = [];
+    const bounds = [];
     list.forEach((s) => {
       const m = addStoreMarker(s);
       if (m) bounds.push(m.getLatLng());
     });
     if (bounds.length > 0) {
       map.fitBounds(L.latLngBounds(bounds), { padding: [20, 20] });
+    } else {
+      map.setView(DEFAULT_CENTER, DEFAULT_ZOOM);
     }
     renderCards(list, center);
   }
@@ -215,8 +222,8 @@
     if (match) {
       const { lat, lon } = match;
       setCenterReadout(lat, lon, match.label);
+      // Pan to the searched place; keep all stores visible
       map.setView([lat, lon], 13, { animate: true });
-      applyFilter({ lat, lng: lon }, parseFloat(radiusSel.value || "0"));
     }
   });
 
@@ -233,8 +240,8 @@
           const { latitude: lat, longitude: lng } = pos.coords;
           const addr = await reverseGeocode(lat, lng);
           setCenterReadout(lat, lng, addr);
+          // Pan to user's location; keep all stores visible
           map.setView([lat, lng], 13, { animate: true });
-          applyFilter({ lat, lng }, parseFloat(radiusSel.value || "0"));
         },
         (err) => {
           console.warn(err);
@@ -248,16 +255,15 @@
       });
   });
 
-  radiusSel?.addEventListener("change", () => {
-    const lat = parseFloat(centerLat.textContent);
-    const lng = parseFloat(centerLng.textContent);
-    const hasCenter = !Number.isNaN(lat) && !Number.isNaN(lng);
-    applyFilter(
-      hasCenter ? { lat, lng } : null,
-      parseFloat(radiusSel.value || "0")
-    );
+  // Reset view to show all stores and fit bounds
+  resetBtn?.addEventListener("click", () => {
+    // Clear center readout
+    centerLat.textContent = "—";
+    centerLng.textContent = "—";
+    centerAddr.textContent = "—";
+    showAllStores(null);
   });
 
   // Initial: add markers for all stores and fit bounds, then render all cards
-  applyFilter(null, 0);
+  showAllStores(null);
 })();

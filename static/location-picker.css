@@ -39,6 +39,14 @@
   grid-column: 1 / -1;
 }
 
+/* Hint text under the map */
+.map-hint {
+  margin-top: -4px;
+  margin-bottom: 8px;
+  color: #64748b; /* slate-500 */
+  font-size: 0.85rem;
+}
+
 /* Ensure Leaflet controls align with the site's style */
 .leaflet-control {
   border-radius: 8px !important;

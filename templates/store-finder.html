@@ -11,6 +11,15 @@
       integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
       crossorigin=""
     />
+    <!-- MarkerCluster CSS -->
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css"
+    />
     <link
       rel="stylesheet"
       href="{{ url_for('static', filename='styles.css') }}"
@@ -150,17 +159,9 @@
             <button id="finder-detect" class="btn-secondary">
               Use My Location
             </button>
-          </div>
-          <div class="control-group small">
-            <label for="radius">Radius:</label>
-            <select id="radius" class="finder-select">
-              <option value="0" selected>Show All</option>
-              <option value="2">2 km</option>
-              <option value="5">5 km</option>
-              <option value="10">10 km</option>
-              <option value="25">25 km</option>
-              <option value="50">50 km</option>
-            </select>
+            <button id="finder-reset" class="btn-secondary" type="button">
+              Reset View
+            </button>
           </div>
         </div>
 
@@ -194,6 +195,15 @@
       crossorigin=""
       defer
     ></script>
+    <!-- MarkerCluster JS -->
+    <script
+      src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"
+      defer
+    ></script>
+    <!-- Inject stores data globally as a robust fallback -->
+    <script>
+      window.FISHMART_STORES = {{ stores | tojson }};
+    </script>
     <script
       src="{{ url_for('static', filename='store-finder.js') }}"
       defer

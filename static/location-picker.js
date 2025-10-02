@@ -133,6 +133,15 @@
     showMarker(lat, lng);
   }
 
+  // Allow placing/moving the marker by clicking on the map
+  map.on("click", async (e) => {
+    const { lat, lng } = e.latlng;
+    showMarker(lat, lng);
+    setReadout(lat, lng, "");
+    const addr = await reverseGeocode(lat, lng);
+    setReadout(undefined, undefined, addr);
+  });
+
   // Marker drag -> update lat/lng + reverse geocode
   marker.on("moveend", async (ev) => {
     const { lat, lng } = ev.target.getLatLng();
