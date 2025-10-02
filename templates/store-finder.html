@@ -11,10 +11,22 @@
       integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
       crossorigin=""
     />
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
-    <link rel="stylesheet" href="{{ url_for('static', filename='products.css') }}" />
-    <link rel="stylesheet" href="{{ url_for('static', filename='location-picker.css') }}" />
-    <link rel="stylesheet" href="{{ url_for('static', filename='store-finder.css') }}" />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='styles.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='products.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='location-picker.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='store-finder.css') }}"
+    />
   </head>
   <body>
     <!-- Navbar -->
@@ -25,18 +37,42 @@
         </div>
         <ul class="navbar-menu">
           {% if current_user.is_authenticated %}
-          <li class="navbar-item"><a href="{{ url_for('products') }}" class="navbar-link">Products</a></li>
-          <li class="navbar-item"><a href="{{ url_for('store_finder') }}" class="navbar-link active">Find Stores</a></li>
+          <li class="navbar-item">
+            <a href="{{ url_for('products') }}" class="navbar-link">Products</a>
+          </li>
+          <li class="navbar-item">
+            <a href="{{ url_for('store_finder') }}" class="navbar-link active"
+              >Find Stores</a
+            >
+          </li>
           {% if current_user.is_fisherman() %}
-          <li class="navbar-item"><a href="{{ url_for('post_product') }}" class="navbar-link">Post Product</a></li>
+          <li class="navbar-item">
+            <a href="{{ url_for('post_product') }}" class="navbar-link"
+              >Post Product</a
+            >
+          </li>
           {% endif %}
-          <li class="navbar-item"><a href="{{ url_for('logout') }}" class="navbar-link">Logout</a></li>
+          <li class="navbar-item">
+            <a href="{{ url_for('logout') }}" class="navbar-link">Logout</a>
+          </li>
           {% else %}
-          <li class="navbar-item"><a href="{{ url_for('index') }}" class="navbar-link">Home</a></li>
-          <li class="navbar-item"><a href="{{ url_for('products') }}" class="navbar-link">Products</a></li>
-          <li class="navbar-item"><a href="{{ url_for('login') }}" class="navbar-link">Login</a></li>
-          <li class="navbar-item"><a href="{{ url_for('signup') }}" class="navbar-link">Sign Up</a></li>
-          <li class="navbar-item"><a href="{{ url_for('fisherman_signup') }}" class="navbar-link">Join as Fisherman</a></li>
+          <li class="navbar-item">
+            <a href="{{ url_for('index') }}" class="navbar-link">Home</a>
+          </li>
+          <li class="navbar-item">
+            <a href="{{ url_for('products') }}" class="navbar-link">Products</a>
+          </li>
+          <li class="navbar-item">
+            <a href="{{ url_for('login') }}" class="navbar-link">Login</a>
+          </li>
+          <li class="navbar-item">
+            <a href="{{ url_for('signup') }}" class="navbar-link">Sign Up</a>
+          </li>
+          <li class="navbar-item">
+            <a href="{{ url_for('fisherman_signup') }}" class="navbar-link"
+              >Join as Fisherman</a
+            >
+          </li>
           {% endif %}
         </ul>
         <div class="mobile-menu-toggle" id="mobile-menu-toggle">
@@ -55,18 +91,42 @@
       </div>
       <ul class="sidebar-menu">
         {% if current_user.is_authenticated %}
-        <li class="sidebar-item"><a href="{{ url_for('products') }}" class="sidebar-link">Products</a></li>
-        <li class="sidebar-item"><a href="{{ url_for('store_finder') }}" class="sidebar-link active">Find Stores</a></li>
+        <li class="sidebar-item">
+          <a href="{{ url_for('products') }}" class="sidebar-link">Products</a>
+        </li>
+        <li class="sidebar-item">
+          <a href="{{ url_for('store_finder') }}" class="sidebar-link active"
+            >Find Stores</a
+          >
+        </li>
         {% if current_user.is_fisherman() %}
-        <li class="sidebar-item"><a href="{{ url_for('post_product') }}" class="sidebar-link">Post Product</a></li>
+        <li class="sidebar-item">
+          <a href="{{ url_for('post_product') }}" class="sidebar-link"
+            >Post Product</a
+          >
+        </li>
         {% endif %}
-        <li class="sidebar-item"><a href="{{ url_for('logout') }}" class="sidebar-link">Logout</a></li>
+        <li class="sidebar-item">
+          <a href="{{ url_for('logout') }}" class="sidebar-link">Logout</a>
+        </li>
         {% else %}
-        <li class="sidebar-item"><a href="{{ url_for('index') }}" class="sidebar-link">Home</a></li>
-        <li class="sidebar-item"><a href="{{ url_for('products') }}" class="sidebar-link">Products</a></li>
-        <li class="sidebar-item"><a href="{{ url_for('login') }}" class="sidebar-link">Login</a></li>
-        <li class="sidebar-item"><a href="{{ url_for('signup') }}" class="sidebar-link">Sign Up</a></li>
-        <li class="sidebar-item"><a href="{{ url_for('fisherman_signup') }}" class="sidebar-link">Join as Fisherman</a></li>
+        <li class="sidebar-item">
+          <a href="{{ url_for('index') }}" class="sidebar-link">Home</a>
+        </li>
+        <li class="sidebar-item">
+          <a href="{{ url_for('products') }}" class="sidebar-link">Products</a>
+        </li>
+        <li class="sidebar-item">
+          <a href="{{ url_for('login') }}" class="sidebar-link">Login</a>
+        </li>
+        <li class="sidebar-item">
+          <a href="{{ url_for('signup') }}" class="sidebar-link">Sign Up</a>
+        </li>
+        <li class="sidebar-item">
+          <a href="{{ url_for('fisherman_signup') }}" class="sidebar-link"
+            >Join as Fisherman</a
+          >
+        </li>
         {% endif %}
       </ul>
     </div>
@@ -74,21 +134,29 @@
 
     <main class="main-content">
       <section class="page-section">
-        <h1>Find Stores Near You</h1>
+        <h1>Find Stores</h1>
 
         <!-- Search + geolocate controls -->
         <div class="finder-controls">
           <div class="control-group">
-            <input id="finder-search" class="finder-input" type="text" placeholder="Search a place or area" list="finderSuggestions" />
+            <input
+              id="finder-search"
+              class="finder-input"
+              type="text"
+              placeholder="Search a place or area"
+              list="finderSuggestions"
+            />
             <datalist id="finderSuggestions"></datalist>
-            <button id="finder-detect" class="btn-secondary">Use My Location</button>
+            <button id="finder-detect" class="btn-secondary">
+              Use My Location
+            </button>
           </div>
           <div class="control-group small">
             <label for="radius">Radius:</label>
             <select id="radius" class="finder-select">
-              <option value="0">Show All</option>
+              <option value="0" selected>Show All</option>
               <option value="2">2 km</option>
-              <option value="5" selected>5 km</option>
+              <option value="5">5 km</option>
               <option value="10">10 km</option>
               <option value="25">25 km</option>
               <option value="50">50 km</option>
@@ -97,12 +165,20 @@
         </div>
 
         <!-- Map -->
-        <div id="stores-map" class="map-container" aria-label="Map with store locations"
-          data-stores='{{ stores | tojson }}'>
-        </div>
-        <div id="stores-readout" class="map-readout" style="margin-top:8px">
-          <div><strong>Center:</strong> <span id="center-lat">—</span>, <span id="center-lng">—</span></div>
-          <div class="address-line"><strong>Area:</strong> <span id="center-addr">—</span></div>
+        <div
+          id="stores-map"
+          class="map-container"
+          aria-label="Map with store locations"
+          data-stores="{{ stores | tojson }}"
+        ></div>
+        <div id="stores-readout" class="map-readout" style="margin-top: 8px">
+          <div>
+            <strong>Center:</strong> <span id="center-lat">—</span>,
+            <span id="center-lng">—</span>
+          </div>
+          <div class="address-line">
+            <strong>Area:</strong> <span id="center-addr">—</span>
+          </div>
         </div>
 
         <!-- Store cards -->
@@ -112,8 +188,16 @@
     </main>
 
     <!-- Leaflet JS -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="" defer></script>
-    <script src="{{ url_for('static', filename='store-finder.js') }}" defer></script>
+    <script
+      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+      crossorigin=""
+      defer
+    ></script>
+    <script
+      src="{{ url_for('static', filename='store-finder.js') }}"
+      defer
+    ></script>
     <script src="{{ url_for('static', filename='main.js') }}" defer></script>
   </body>
 </html>

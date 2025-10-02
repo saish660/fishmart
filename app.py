@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, session
+from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -6,10 +6,12 @@ from werkzeug.utils import secure_filename
 import os
 from datetime import datetime
 from sqlalchemy import text
+from secrets import token_hex
+import requests
 
 
 app = Flask(__name__)
-app.secret_key = "IDKWHAT"
+app.secret_key = "REMOVE_ME" #token_hex(32)
 
 # Database configuration
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///fishmart.db'
@@ -426,6 +428,64 @@ def add_store_review(store_owner_id):
         flash("Invalid rating value", "error")
     
     return redirect(url_for("store_page", store_owner_id=store_owner_id))
+
+@app.route("/api/geocode/search")
+def geocode_search():
+    """Server-side proxy to Nominatim search to avoid CORS in browser."""
+    q = request.args.get("q", "").strip()
+    limit = request.args.get("limit", "8")
+    if not q or len(q) < 2:
+        return jsonify([])
+    try:
+        resp = requests.get(
+            "https://nominatim.openstreetmap.org/search",
+            params={
+                "q": q,
+                "format": "jsonv2",
+                "limit": limit,
+                "addressdetails": 1,
+            },
+            headers={
+                # Provide a valid UA as required by Nominatim policy
+                "User-Agent": "FishmartApp/1.0 (+http://localhost)",
+                "Accept": "application/json",
+            },
+            timeout=10,
+        )
+        if resp.status_code != 200:
+            return jsonify([]), resp.status_code
+        return jsonify(resp.json())
+    except Exception:
+        return jsonify([]), 502
+
+@app.route("/api/geocode/reverse")
+def geocode_reverse():
+    """Server-side proxy to Nominatim reverse geocode to avoid CORS in browser."""
+    lat = request.args.get("lat")
+    lon = request.args.get("lon")
+    if lat is None or lon is None:
+        return jsonify({}), 400
+    try:
+        resp = requests.get(
+            "https://nominatim.openstreetmap.org/reverse",
+            params={
+                "format": "jsonv2",
+                "lat": lat,
+                "lon": lon,
+                "zoom": 14,
+                "addressdetails": 1,
+            },
+            headers={
+                "User-Agent": "FishmartApp/1.0 (+http://localhost)",
+                "Accept": "application/json",
+            },
+            timeout=10,
+        )
+        if resp.status_code != 200:
+            return jsonify({}), resp.status_code
+        return jsonify(resp.json())
+    except Exception:
+        return jsonify({}), 502
 
 @app.route("/logout")
 @login_required

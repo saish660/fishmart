@@ -59,12 +59,9 @@
 
   async function reverseGeocode(lat, lng) {
     try {
-      const url = new URL("https://nominatim.openstreetmap.org/reverse");
-      url.searchParams.set("format", "jsonv2");
+      const url = new URL("/api/geocode/reverse", window.location.origin);
       url.searchParams.set("lat", lat);
       url.searchParams.set("lon", lng);
-      url.searchParams.set("zoom", "14");
-      url.searchParams.set("addressdetails", "1");
       const resp = await fetch(url.toString(), {
         headers: { Accept: "application/json" },
       });
@@ -82,11 +79,9 @@
     try {
       if (searchController) searchController.abort();
       searchController = new AbortController();
-      const url = new URL("https://nominatim.openstreetmap.org/search");
+      const url = new URL("/api/geocode/search", window.location.origin);
       url.searchParams.set("q", q);
-      url.searchParams.set("format", "jsonv2");
       url.searchParams.set("limit", "8");
-      url.searchParams.set("addressdetails", "1");
       const resp = await fetch(url.toString(), {
         signal: searchController.signal,
         headers: { Accept: "application/json" },
