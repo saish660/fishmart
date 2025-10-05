@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Fishmart</title>
+    <title>Amcho Pasro</title>
     <link
       rel="stylesheet"
       href="{{ url_for('static', filename='styles.css') }}"
@@ -17,13 +17,14 @@
     <nav class="navbar">
       <div class="navbar-container">
         <div class="navbar-brand">
-          <a href="#" class="brand-link">Fishmart</a>
+          <a href="#" class="brand-link">Amcho Pasro</a>
         </div>
 
         <ul class="navbar-menu">
           <li class="navbar-item">
             <a href="{{ url_for('index') }}" class="navbar-link active">Home</a>
           </li>
+          {% if current_user.is_authenticated %}
           <li class="navbar-item">
             <a href="{{ url_for('products') }}" class="navbar-link">Products</a>
           </li>
@@ -32,12 +33,14 @@
               >Find Stores</a
             >
           </li>
-          {% if current_user.is_authenticated %} {% if
-          current_user.is_fisherman() %}
+          {% if current_user.is_seller() %}
           <li class="navbar-item">
             <a href="{{ url_for('post_product') }}" class="navbar-link"
               >Post Product</a
             >
+            <li class="navbar-item">
+              <a href="{{ url_for('my_store') }}" class="navbar-link">My Store</a>
+            </li>
           </li>
           {% endif %}
           <li class="navbar-item">
@@ -51,8 +54,8 @@
             <a href="{{ url_for('signup') }}" class="navbar-link">Sign Up</a>
           </li>
           <li class="navbar-item">
-            <a href="{{ url_for('fisherman_signup') }}" class="navbar-link"
-              >Join as Fisherman</a
+            <a href="{{ url_for('seller_signup') }}" class="navbar-link"
+              >Join as Seller</a
             >
           </li>
           {% endif %}
@@ -68,7 +71,7 @@
 
     <div class="mobile-sidebar" id="mobile-sidebar">
       <div class="sidebar-header">
-        <div class="sidebar-brand">Fishmart</div>
+        <div class="sidebar-brand">Amcho Pasro</div>
         <button class="sidebar-close" id="sidebar-close">&times;</button>
       </div>
       <ul class="sidebar-menu">
@@ -83,12 +86,14 @@
             >Find Stores</a
           >
         </li>
-        {% if current_user.is_authenticated %} {% if current_user.is_fisherman()
-        %}
+        {% if current_user.is_authenticated %} {% if current_user.is_seller() %}
         <li class="sidebar-item">
           <a href="{{ url_for('post_product') }}" class="sidebar-link"
             >Post Product</a
           >
+          <li class="sidebar-item">
+            <a href="{{ url_for('my_store') }}" class="sidebar-link">My Store</a>
+          </li>
         </li>
         {% endif %}
         <li class="sidebar-item">
@@ -102,8 +107,8 @@
           <a href="{{ url_for('signup') }}" class="sidebar-link">Sign Up</a>
         </li>
         <li class="sidebar-item">
-          <a href="{{ url_for('fisherman_signup') }}" class="sidebar-link"
-            >Join as Fisherman</a
+          <a href="{{ url_for('seller_signup') }}" class="sidebar-link"
+            >Join as Seller</a
           >
         </li>
         {% endif %}
@@ -117,15 +122,16 @@
       <section class="hero-section">
         <div class="hero-background">
           <div class="hero-content" id="hero-content">
-            <h1 class="hero-title">Welcome to Fishmart</h1>
+            <h1 class="hero-title">Welcome to Amcho Pasro</h1>
             <p class="hero-subtitle">
-              Your premier destination for fresh seafood
+              Your marketplace for locally made products in Goa
             </p>
             <p class="hero-description">
-              At Fishmart, we bring you a curated selection of fresh fish and
-              seafood, sourced from trusted suppliers. As a new platform, we’re
-              committed to quality, transparency, and attentive
-              service—connecting you with great seafood as it becomes available.
+              At Amcho Pasro, we bring you a curated selection of authentic,
+              locally made products from Goa’s creators and small businesses.
+              We’re committed to quality, transparency, and attentive
+              service—connecting you with great local finds as they become
+              available.
             </p>
             <div class="hero-buttons">
               <a href="{{ url_for('products') }}" class="cta-button primary"
@@ -142,45 +148,45 @@
       <section class="problem-section">
         <div class="container">
           <div class="problem-content">
-            <h2 class="section-title">The Seafood Industry Challenge</h2>
+            <h2 class="section-title">Challenges in Finding Local Products</h2>
             <div class="problem-grid">
               <div class="feature-item">
                 <h3>Quality Uncertainty</h3>
                 <p>
-                  Consumers struggle to find truly fresh seafood, often
-                  receiving products that have been sitting in storage for days
-                  or weeks.
+                  Shoppers struggle to discover authentic local goods and often
+                  miss out on unique products made nearby.
                 </p>
               </div>
               <div class="feature-item">
                 <h3>Limited Access</h3>
                 <p>
-                  Many areas lack reliable seafood suppliers, forcing customers
-                  to compromise on quality or travel long distances.
+                  Many areas lack a reliable way to browse local sellers,
+                  leading to limited access and fewer options.
                 </p>
               </div>
               <div class="feature-item">
                 <h3>Price Transparency</h3>
                 <p>
-                  Hidden markups and unclear pricing make it difficult for
-                  customers to get fair value for premium seafood products.
+                  Hidden markups and unclear pricing make it hard for customers
+                  to get fair value on local products.
                 </p>
               </div>
               <div class="feature-item">
                 <h3>Sustainability Concerns</h3>
                 <p>
-                  Customers want to support responsible fishing practices but
-                  lack information about the source and methods used.
+                  People want to support local artisans and sustainable
+                  businesses but lack information about who makes the products
+                  and how.
                 </p>
               </div>
             </div>
             <div class="problem-solution">
               <h3>Our Solution</h3>
               <p>
-                Fishmart bridges the gap between ocean and table with clear
-                sourcing and pricing information. We connect you with trusted
-                suppliers and make it easy to discover available catches as they
-                come in.
+                Amcho Pasro bridges the gap between local makers and buyers with
+                clear sourcing and pricing information. We connect you with
+                trusted sellers across Goa and make it easy to discover new
+                products as they come in.
               </p>
             </div>
           </div>
@@ -189,12 +195,15 @@
 
       <section class="features-section">
         <div class="container">
-          <h2 class="section-title">Why Use Fishmart?</h2>
+          <h2 class="section-title">Why Use Amcho Pasro?</h2>
           <h2 class="features_for">For Buyers</h2>
           <div class="features">
             <div class="feature-item">
               <h3>Browse Easily</h3>
-              <p>Explore seafood from multiple local sellers in one place.</p>
+              <p>
+                Explore locally made products from sellers across Goa in one
+                place.
+              </p>
             </div>
             <div class="feature-item">
               <h3>Save Time</h3>
@@ -206,8 +215,8 @@
             <div class="feature-item">
               <h3>Choose What You Want</h3>
               <p>
-                Find the fish and quantity you prefer instead of settling for
-                what's on hand.
+                Find the products and quantities you prefer instead of settling
+                for what's on hand.
               </p>
             </div>
           </div>
@@ -216,11 +225,11 @@
           <div class="features">
             <div class="feature-item">
               <h3>Improve Your Reach</h3>
-              <p>Get people from all over Goa to discover your catch.</p>
+              <p>Get people from all over Goa to discover your products.</p>
             </div>
             <div class="feature-item">
               <h3>Free Advertisement</h3>
-              <p>Just post your catch and let others know what you have.</p>
+              <p>Just post your products and let others know what you have.</p>
             </div>
             <div class="feature-item">
               <h3>Improve your sales</h3>
@@ -233,20 +242,20 @@
       <section class="cta-section">
         <div class="container">
           <div class="cta-content">
-            <h2 class="section-title">Create Your Fishmart Account</h2>
+            <h2 class="section-title">Create Your Account</h2>
             <div class="cta-benefits">
               <div class="benefit-item">
                 <h4>For Buyers</h4>
                 <p>
-                  Access fresh catches, compare prices, and get the best seafood
-                  delivered to your door.
+                  Access authentic local products, compare prices, and get the
+                  best items near you.
                 </p>
               </div>
               <div class="benefit-item">
-                <h4>For Suppliers</h4>
+                <h4>For Sellers</h4>
                 <p>
                   Expand your reach, connect with more customers, and grow your
-                  seafood business effortlessly.
+                  local business effortlessly.
                 </p>
               </div>
             </div>
@@ -255,9 +264,9 @@
                 >Start as Buyer</a
               >
               <a
-                href="{{ url_for('fisherman_signup') }}"
+                href="{{ url_for('seller_signup') }}"
                 class="cta-button secondary"
-                >Join as Supplier</a
+                >Join as Seller</a
               >
             </div>
             <p class="cta-note">

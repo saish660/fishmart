@@ -1,0 +1,148 @@
+.product-detail {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  align-items: start;
+}
+
+.product-image-detail {
+  width: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f8f9fa;
+}
+
+.product-image-detail img {
+  max-width: 100%;
+  max-height: 500px;
+  display: block;
+}
+
+.product-placeholder-detail {
+  width: 100%;
+  height: 300px;
+  background: #f5f5f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #999;
+  font-size: 1.2rem;
+}
+
+.product-info {
+  padding: 1rem 0;
+}
+
+main .product-title-detail {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #2c3e50;
+  text-align: left;
+  margin-bottom: 1rem;
+}
+
+.product-price-detail {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: var(--primary-darker);
+  margin-bottom: 1rem;
+}
+
+.product-meta {
+  display: grid;
+  gap: 0.8rem;
+  margin-bottom: 2rem;
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+  color: #555;
+}
+
+.meta-label {
+  font-weight: 600;
+  min-width: 80px;
+}
+
+.product-description-detail {
+  background: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+}
+
+.seller-info {
+  background: white;
+  border: 2px solid #e9ecef;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.seller-header {
+  display: flex;
+  justify-content: between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #6c757d;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  text-decoration: none;
+  border-radius: 6px;
+  transition: background-color 0.3s;
+  margin-bottom: 2rem;
+  margin-left: 15px;
+}
+
+.back-button:hover {
+  background: #5a6268;
+  color: white;
+}
+
+.store-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--primary-dark);
+  color: white;
+  padding: 0.75rem 1.5rem;
+  margin-left: 20px;
+  text-decoration: none;
+  border-radius: 6px;
+  transition: background-color 0.3s;
+}
+
+.store-button:hover {
+  background: var(--primary-color);
+  color: white;
+}
+
+@media (max-width: 768px) {
+  .product-detail {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .product-title-detail {
+    font-size: 1.5rem;
+  }
+
+  .product-price-detail {
+    font-size: 1.4rem;
+  }
+}

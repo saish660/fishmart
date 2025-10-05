@@ -13,14 +13,14 @@ main {
   background: var(--white);
   border-radius: var(--border-radius-large);
   overflow: hidden;
-  box-shadow: 0 5px 20px #d4ffae;
+  box-shadow: 0 5px 20px var(--green-light);
   max-width: 500px;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .product-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 8px 25px #bfff88;
+  box-shadow: 0 8px 25px var(--green-bright);
 }
 
 .product-image {
@@ -77,14 +77,14 @@ main {
 }
 
 .product-timestamp {
-  color: #888;
+  color: var(--gray-888);
   font-size: 0.85rem;
 }
 
 .product-seller {
   margin-top: 10px;
   padding: 10px;
-  background-color: #f8f9fa;
+  background-color: var(--medium-gray);
   border-radius: var(--border-radius);
   font-size: 1rem;
 }
@@ -103,7 +103,7 @@ main {
   padding: 60px 20px;
   background: var(--white);
   border-radius: var(--border-radius-large);
-  box-shadow: 0 5px 20px #d4ffae;
+  box-shadow: 0 5px 20px var(--green-bright);
 }
 
 .no-products h3 {

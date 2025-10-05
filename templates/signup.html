@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Sign Up - Fishmart</title>
+    <title>Sign Up - Amcho Pasro</title>
     <link
       rel="stylesheet"
       href="{{ url_for('static', filename='styles.css') }}"
@@ -19,7 +19,7 @@
       <div class="navbar-container">
         <!-- Logo -->
         <div class="navbar-brand">
-          <a href="{{ url_for('index') }}" class="brand-link">Fishmart</a>
+          <a href="{{ url_for('index') }}" class="brand-link">Amcho Pasro</a>
         </div>
 
         <!-- Menu Items (Desktop) -->
@@ -35,8 +35,8 @@
               >Find Stores</a
             >
           </li>
-          {% if current_user.is_authenticated %} {% if
-          current_user.is_fisherman() %}
+          {% if current_user.is_authenticated %} {% if current_user.is_seller()
+          %}
           <li class="navbar-item">
             <a href="{{ url_for('post_product') }}" class="navbar-link"
               >Post Product</a
@@ -56,8 +56,8 @@
             >
           </li>
           <li class="navbar-item">
-            <a href="{{ url_for('fisherman_signup') }}" class="navbar-link"
-              >Join as Fisherman</a
+            <a href="{{ url_for('seller_signup') }}" class="navbar-link"
+              >Join as Seller</a
             >
           </li>
           {% endif %}
@@ -75,7 +75,7 @@
     <!-- Mobile Sidebar -->
     <div class="mobile-sidebar" id="mobile-sidebar">
       <div class="sidebar-header">
-        <div class="sidebar-brand">Fishmart</div>
+        <div class="sidebar-brand">Amcho Pasro</div>
         <button class="sidebar-close" id="sidebar-close">&times;</button>
       </div>
       <ul class="sidebar-menu">
@@ -90,8 +90,7 @@
             >Find Stores</a
           >
         </li>
-        {% if current_user.is_authenticated %} {% if current_user.is_fisherman()
-        %}
+        {% if current_user.is_authenticated %} {% if current_user.is_seller() %}
         <li class="sidebar-item">
           <a href="{{ url_for('post_product') }}" class="sidebar-link"
             >Post Product</a
@@ -111,8 +110,8 @@
           >
         </li>
         <li class="sidebar-item">
-          <a href="{{ url_for('fisherman_signup') }}" class="sidebar-link"
-            >Join as Fisherman</a
+          <a href="{{ url_for('seller_signup') }}" class="sidebar-link"
+            >Join as Seller</a
           >
         </li>
         {% endif %}
@@ -130,7 +129,7 @@
             <div class="auth-header">
               <h1 class="auth-title">Create Account</h1>
               <p class="auth-subtitle">
-                Join Fishmart for the freshest seafood experience
+                Join Amcho Pasro and discover locally made products across Goa
               </p>
             </div>
 
@@ -236,9 +235,9 @@
 
               <div class="auth-footer">
                 <p>
-                  Want to sell your catch?
-                  <a href="{{ url_for('fisherman_signup') }}" class="auth-link"
-                    >Join as Fisherman</a
+                  Want to sell your locally made products?
+                  <a href="{{ url_for('seller_signup') }}" class="auth-link"
+                    >Join as Seller</a
                   >
                 </p>
                 <p>

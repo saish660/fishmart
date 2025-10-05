@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Post Product - Fishmart</title>
+    <title>Post Product - Amcho Pasro</title>
     <link
       rel="stylesheet"
       href="{{ url_for('static', filename='styles.css') }}"
@@ -19,7 +19,7 @@
       <div class="navbar-container">
         <!-- Logo -->
         <div class="navbar-brand">
-          <a href="{{ url_for('index') }}" class="brand-link">Fishmart</a>
+          <a href="{{ url_for('index') }}" class="brand-link">Amcho Pasro</a>
         </div>
 
         <!-- Menu Items (Desktop) -->
@@ -28,11 +28,14 @@
           <li class="navbar-item">
             <a href="{{ url_for('products') }}" class="navbar-link">Products</a>
           </li>
-          {% if current_user.is_fisherman() %}
+          {% if current_user.is_seller() %}
           <li class="navbar-item">
             <a href="{{ url_for('post_product') }}" class="navbar-link active"
               >Post Product</a
             >
+            <li class="navbar-item">
+              <a href="{{ url_for('my_store') }}" class="navbar-link">My Store</a>
+            </li>
           </li>
           {% endif %}
           <li class="navbar-item">
@@ -52,8 +55,8 @@
             <a href="{{ url_for('signup') }}" class="navbar-link">Sign Up</a>
           </li>
           <li class="navbar-item">
-            <a href="{{ url_for('fisherman_signup') }}" class="navbar-link"
-              >Join as Fisherman</a
+            <a href="{{ url_for('seller_signup') }}" class="navbar-link"
+              >Join as Seller</a
             >
           </li>
           {% endif %}
@@ -71,7 +74,7 @@
     <!-- Mobile Sidebar -->
     <div class="mobile-sidebar" id="mobile-sidebar">
       <div class="sidebar-header">
-        <div class="sidebar-brand">Fishmart</div>
+        <div class="sidebar-brand">Amcho Pasro</div>
         <button class="sidebar-close" id="sidebar-close">&times;</button>
       </div>
       <ul class="sidebar-menu">
@@ -79,11 +82,14 @@
         <li class="sidebar-item">
           <a href="{{ url_for('products') }}" class="sidebar-link">Products</a>
         </li>
-        {% if current_user.is_fisherman() %}
+        {% if current_user.is_seller() %}
         <li class="sidebar-item">
           <a href="{{ url_for('post_product') }}" class="sidebar-link active"
             >Post Product</a
           >
+          <li class="sidebar-item">
+            <a href="{{ url_for('my_store') }}" class="sidebar-link">My Store</a>
+          </li>
         </li>
         {% endif %}
         <li class="sidebar-item">
@@ -103,8 +109,8 @@
           <a href="{{ url_for('signup') }}" class="sidebar-link">Sign Up</a>
         </li>
         <li class="sidebar-item">
-          <a href="{{ url_for('fisherman_signup') }}" class="sidebar-link"
-            >Join as Fisherman</a
+          <a href="{{ url_for('seller_signup') }}" class="sidebar-link"
+            >Join as Seller</a
           >
         </li>
         {% endif %}
@@ -120,7 +126,7 @@
         <div class="container">
           <div class="form-header">
             <h1>Post Your Product</h1>
-            <p>Share your fresh catch with buyers in your area</p>
+            <p>Share your locally made products with buyers in Goa</p>
           </div>
 
           <!-- Flash Messages -->
@@ -146,7 +152,7 @@
                   type="text"
                   id="productTitle"
                   name="title"
-                  placeholder="e.g., Fresh Atlantic Salmon"
+                  placeholder="e.g., Handcrafted Bamboo Basket"
                   required
                 />
                 <small class="form-hint"
@@ -197,11 +203,11 @@
                   type="text"
                   id="productCity"
                   name="city"
-                  placeholder="e.g., Seattle, WA"
+                  placeholder="e.g., Panaji, Goa"
                   required
                 />
                 <small class="form-hint"
-                  >Where is this product available for pickup/delivery?</small
+                  ><!-- Location input removed: store location will be used instead --></small
                 >
               </div>
             </div>
@@ -212,12 +218,12 @@
                 <textarea
                   id="productDescription"
                   name="description"
-                  placeholder="Describe your product - freshness, catch method, size, etc."
+                  placeholder="Describe your product - materials, features, size, etc."
                   rows="4"
                 ></textarea>
                 <small class="form-hint"
-                  >Optional - add details about quality, origin, or
-                  preparation</small
+                  >Optional - add details about quality, origin, or how it's
+                  made</small
                 >
               </div>
             </div>

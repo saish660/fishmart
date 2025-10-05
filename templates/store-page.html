@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{{ store_owner.store_name }} - Fishmart</title>
+    <title>{{ store_owner.store_name }} - Amcho Pasro</title>
     <!-- Leaflet CSS for map -->
     <link
       rel="stylesheet"
@@ -34,7 +34,7 @@
       <div class="navbar-container">
         <!-- Logo -->
         <div class="navbar-brand">
-          <a href="{{ url_for('index') }}" class="brand-link">Fishmart</a>
+          <a href="{{ url_for('index') }}" class="brand-link">Amcho Pasro</a>
         </div>
 
         <!-- Menu Items (Desktop) -->
@@ -48,11 +48,14 @@
               >Find Stores</a
             >
           </li>
-          {% if current_user.is_fisherman() %}
+          {% if current_user.is_seller() %}
           <li class="navbar-item">
             <a href="{{ url_for('post_product') }}" class="navbar-link"
               >Post Product</a
             >
+            <li class="navbar-item">
+              <a href="{{ url_for('my_store') }}" class="navbar-link">My Store</a>
+            </li>
           </li>
           {% endif %}
           <li class="navbar-item">
@@ -72,8 +75,8 @@
             <a href="{{ url_for('signup') }}" class="navbar-link">Sign Up</a>
           </li>
           <li class="navbar-item">
-            <a href="{{ url_for('fisherman_signup') }}" class="navbar-link"
-              >Join as Fisherman</a
+            <a href="{{ url_for('seller_signup') }}" class="navbar-link"
+              >Join as Seller</a
             >
           </li>
           {% endif %}
@@ -91,7 +94,7 @@
     <!-- Mobile Sidebar -->
     <div class="mobile-sidebar" id="mobile-sidebar">
       <div class="sidebar-header">
-        <div class="sidebar-brand">Fishmart</div>
+        <div class="sidebar-brand">Amcho Pasro</div>
         <button class="sidebar-close" id="sidebar-close">&times;</button>
       </div>
       <ul class="sidebar-menu">
@@ -104,11 +107,14 @@
             >Find Stores</a
           >
         </li>
-        {% if current_user.is_fisherman() %}
+        {% if current_user.is_seller() %}
         <li class="sidebar-item">
           <a href="{{ url_for('post_product') }}" class="sidebar-link"
             >Post Product</a
           >
+          <li class="sidebar-item">
+            <a href="{{ url_for('my_store') }}" class="sidebar-link">My Store</a>
+          </li>
         </li>
         {% endif %}
         <li class="sidebar-item">
@@ -128,8 +134,8 @@
           <a href="{{ url_for('signup') }}" class="sidebar-link">Sign Up</a>
         </li>
         <li class="sidebar-item">
-          <a href="{{ url_for('fisherman_signup') }}" class="sidebar-link"
-            >Join as Fisherman</a
+          <a href="{{ url_for('seller_signup') }}" class="sidebar-link"
+            >Join as Seller</a
           >
         </li>
         {% endif %}
@@ -141,10 +147,80 @@
 
     <!-- Store Header -->
     <div class="store-header">
+      <div class="store-image-profile">
+        <img
+          src="{{ url_for('static', filename=( 'uploads/' ~ store_owner.store_image ) if store_owner.store_image else 'images/default_store_img.png') }}"
+          alt="Store Image"
+          style="
+            max-width: 120px;
+            max-height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+          "
+        />
+      </div>
       <h1 class="store-name">{{ store_owner.store_name }}</h1>
       <div class="store-location">
         {{ store_owner.store_location }}, {{ store_owner.store_city }}
       </div>
+        {% if current_user.is_authenticated and current_user.id == store_owner.id %}
+          <div style="margin-top: 10px;">
+            <button id="openEditModal" class="btn-edit-store" style="padding:0.5rem 1.2rem;background:#2563eb;color:#fff;border:none;border-radius:6px;cursor:pointer;">Edit Store Details</button>
+          </div>
+          <!-- Floating Modal Edit Form -->
+          <div id="editModalOverlay" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.45);z-index:1000;align-items:center;justify-content:center;">
+            <div class="modal-form" style="background:#fff;padding:2.5rem 2rem 2rem 2rem;border-radius:18px;box-shadow:0 8px 32px rgba(0,0,0,0.18);max-width:420px;width:100%;position:relative;max-height:90vh;overflow-y:auto;">
+              <button type="button" id="closeEditModal" style="position:absolute;top:18px;right:18px;background:none;border:none;font-size:1.8rem;line-height:1;color:#475569;cursor:pointer;">&times;</button>
+              <h2 style="margin-bottom:1.2rem;text-align:center;">Edit Store Details</h2>
+              <form method="POST" action="{{ url_for('edit_store') }}" enctype="multipart/form-data">
+                <div class="form-group" style="margin-bottom:1rem;">
+                  <label for="store_name">Store Name:</label>
+                  <input type="text" id="store_name" name="store_name" value="{{ store_owner.store_name }}" required style="width:100%;padding:0.5rem;margin-top:0.3rem;" />
+                </div>
+                <div class="form-group" style="margin-bottom:1rem;">
+                  <label for="store_location">Location:</label>
+                  <input type="text" id="store_location" name="store_location" value="{{ store_owner.store_location }}" required style="width:100%;padding:0.5rem;margin-top:0.3rem;" />
+                </div>
+                <div class="form-group" style="margin-bottom:1rem;">
+                  <label for="store_city">City:</label>
+                  <input type="text" id="store_city" name="store_city" value="{{ store_owner.store_city }}" required style="width:100%;padding:0.5rem;margin-top:0.3rem;" />
+                </div>
+                <!-- Removed visible lat/lng/address fields; only hidden fields below are submitted -->
+                <div class="form-group" style="margin-bottom:1.2rem;">
+                  <label for="store_image">Store Image:</label><br>
+                  {% if store_owner.store_image %}
+                    <img src="{{ url_for('static', filename='uploads/' ~ store_owner.store_image) }}" alt="Current Store Image" style="max-width:80px;max-height:80px;border-radius:50%;object-fit:cover;margin-bottom:0.5rem;" />
+                  {% endif %}
+                  <input type="file" id="store_image" name="store_image" accept="image/*" style="margin-top:0.3rem;" />
+                </div>
+                <!-- Location Picker -->
+                <div class="form-section" style="margin-bottom:1.2rem;">
+                  <h3 class="section-title">Shop Location Picker</h3>
+                  <div class="form-group">
+                    <label for="addressSearch">Search Shop Address</label>
+                    <input type="text" id="editAddressSearch" name="addressSearch" placeholder="Search address or place (powered by OpenStreetMap)" list="editAddressSuggestions" autocomplete="off" />
+                    <datalist id="editAddressSuggestions"></datalist>
+                  </div>
+                  <div class="form-actions-row">
+                    <button type="button" id="editDetectLocationBtn" class="secondary-button">Detect My Location</button>
+                  </div>
+                  <div id="edit-shop-map" class="map-container" aria-label="Shop location map" style="height:220px;margin-bottom:0.7rem;"></div>
+                  <p class="map-hint"><small>Tip: Click anywhere on the map to place/move the marker, or drag the marker to fine-tune the location.</small></p>
+                  <div class="map-readout">
+                    <div><strong>Latitude:</strong> <span id="edit-current-lat">{{ store_owner.store_latitude or '—' }}</span></div>
+                    <div><strong>Longitude:</strong> <span id="edit-current-lng">{{ store_owner.store_longitude or '—' }}</span></div>
+                    <div class="address-line"><strong>Address:</strong> <span id="edit-current-address">{{ store_owner.store_address or store_owner.store_location or '—' }}</span></div>
+                  </div>
+                  <!-- Hidden inputs submitted with the form -->
+                  <input type="hidden" name="latitude" id="edit-latitude" value="{{ store_owner.store_latitude }}" />
+                  <input type="hidden" name="longitude" id="edit-longitude" value="{{ store_owner.store_longitude }}" />
+                  <input type="hidden" name="address" id="edit-address" value="{{ store_owner.store_address }}" />
+                </div>
+                <button type="submit" class="btn-submit" style="width:100%;padding:0.7rem 0;font-size:1.1rem;background:#2563eb;color:#fff;border:none;border-radius:6px;cursor:pointer;">Save Changes</button>
+              </form>
+            </div>
+          </div>
+        {% endif %}
       {% if store_owner.get_store_rating() %}
       <div class="store-rating">
         {{ store_owner.get_store_rating() }}/5
@@ -221,11 +297,11 @@
             style="cursor: pointer"
           >
             <div class="product-image">
-              {% if product.image_filename %}
-              <img
-                src="{{ url_for('static', filename='uploads/' + product.image_filename) }}"
-                alt="{{ product.title }}"
-              />
+                {% if product.image_filename %}
+                <img
+                  src="{{ url_for('static', filename='uploads/product_images/' + product.image_filename) }}"
+                  alt="{{ product.title }}"
+                />
               {% else %}
               <div class="product-placeholder">
                 <span>No Image</span>
@@ -346,6 +422,55 @@
       defer
     ></script>
     <script src="{{ url_for('static', filename='main.js') }}" defer></script>
+
+      <!-- Leaflet JS for modal map -->
+      <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="" defer></script>
+      <script src="{{ url_for('static', filename='location-picker.js') }}" defer></script>
+      <script>
+      (function() {
+        // Modal open/close logic
+        const openEditBtn = document.getElementById('openEditModal');
+        const editModal = document.getElementById('editModalOverlay');
+        const closeEditBtn = document.getElementById('closeEditModal');
+        if (openEditBtn && editModal && closeEditBtn) {
+          openEditBtn.onclick = function() {
+            editModal.style.display = 'flex';
+            document.body.style.overflow = 'hidden'; // Prevent background scroll
+            setTimeout(function() {
+              if (window.initLocationPicker) {
+                window.initLocationPicker({
+                  mapId: 'edit-shop-map',
+                  latInput: 'edit-latitude',
+                  lngInput: 'edit-longitude',
+                  addressInput: 'edit-address',
+                  addressSearch: 'editAddressSearch',
+                  addressSuggestions: 'editAddressSuggestions',
+                  detectBtn: 'editDetectLocationBtn',
+                  latReadout: 'edit-current-lat',
+                  lngReadout: 'edit-current-lng',
+                  addressReadout: 'edit-current-address',
+                  initialLat: parseFloat(document.getElementById('edit-latitude')?.value) || 15.2993,
+                  initialLng: parseFloat(document.getElementById('edit-longitude')?.value) || 74.1240,
+                  initialAddress: document.getElementById('edit-address')?.value || '',
+                  storeLocationInput: 'store_location',
+                });
+              }
+            }, 300);
+          };
+          function closeModal() {
+            editModal.style.display = 'none';
+            document.body.style.overflow = '';
+          }
+          closeEditBtn.onclick = closeModal;
+          editModal.onclick = function(e) {
+            if (e.target === editModal) {
+              closeModal();
+            }
+          };
+        }
+      })();
+      </script>
+
     <script>
       // Rating stars interaction
       const ratingInputs = document.querySelectorAll(

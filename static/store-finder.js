@@ -19,12 +19,12 @@
     const raw = mapEl.dataset.stores;
     if (raw && raw.trim().length) {
       stores = JSON.parse(raw) || [];
-    } else if (Array.isArray(window.FISHMART_STORES)) {
-      stores = window.FISHMART_STORES;
+    } else if (Array.isArray(window.AMCHO_PASRO_STORES)) {
+      stores = window.AMCHO_PASRO_STORES;
     }
   } catch (e) {
-    if (Array.isArray(window.FISHMART_STORES)) {
-      stores = window.FISHMART_STORES;
+    if (Array.isArray(window.AMCHO_PASRO_STORES)) {
+      stores = window.AMCHO_PASRO_STORES;
     } else {
       console.warn("Failed to parse stores from dataset.", e);
       stores = [];

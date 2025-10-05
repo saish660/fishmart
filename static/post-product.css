@@ -80,7 +80,7 @@ main {
 .form-group select:focus {
   outline: none;
   border-color: var(--secondary-color);
-  box-shadow: 0 0 0 3px rgba(130, 219, 52, 0.1);
+  box-shadow: 0 0 0 3px rgba(var(--green-accent), 0.1);
 }
 
 .form-group textarea {
@@ -107,7 +107,7 @@ main {
 
 .price-input-group:focus-within {
   border-color: var(--secondary-color);
-  box-shadow: 0 0 0 3px rgba(130, 219, 52, 0.1);
+  box-shadow: 0 0 0 3px rgba(var(--green-accent), 0.1);
 }
 
 .currency-symbol {

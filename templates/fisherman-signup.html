@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Fisherman Sign Up - Fishmart</title>
+    <title>Seller Sign Up - Amcho Pasro</title>
     <!-- Leaflet CSS -->
     <link
       rel="stylesheet"
@@ -30,7 +30,7 @@
       <div class="navbar-container">
         <!-- Logo -->
         <div class="navbar-brand">
-          <a href="{{ url_for('index') }}" class="brand-link">Fishmart</a>
+          <a href="{{ url_for('index') }}" class="brand-link">Amcho Pasro</a>
         </div>
 
         <!-- Menu Items (Desktop) -->
@@ -41,8 +41,8 @@
           <li class="navbar-item">
             <a href="{{ url_for('products') }}" class="navbar-link">Products</a>
           </li>
-          {% if current_user.is_authenticated %} {% if
-          current_user.is_fisherman() %}
+          {% if current_user.is_authenticated %} {% if current_user.is_seller()
+          %}
           <li class="navbar-item">
             <a href="{{ url_for('post_product') }}" class="navbar-link"
               >Post Product</a
@@ -74,7 +74,7 @@
     <!-- Mobile Sidebar -->
     <div class="mobile-sidebar" id="mobile-sidebar">
       <div class="sidebar-header">
-        <div class="sidebar-brand">Fishmart</div>
+        <div class="sidebar-brand">Amcho Pasro</div>
         <button class="sidebar-close" id="sidebar-close">&times;</button>
       </div>
       <ul class="sidebar-menu">
@@ -84,8 +84,7 @@
         <li class="sidebar-item">
           <a href="{{ url_for('products') }}" class="sidebar-link">Products</a>
         </li>
-        {% if current_user.is_authenticated %} {% if current_user.is_fisherman()
-        %}
+        {% if current_user.is_authenticated %} {% if current_user.is_seller() %}
         <li class="sidebar-item">
           <a href="{{ url_for('post_product') }}" class="sidebar-link"
             >Post Product</a
@@ -115,9 +114,9 @@
         <div class="auth-container">
           <div class="auth-card">
             <div class="auth-header">
-              <h1 class="auth-title">Join as Fisherman/Supplier</h1>
+              <h1 class="auth-title">Join as Seller</h1>
               <p class="auth-subtitle">
-                Start selling your fresh catch on Fishmart
+                Start selling your locally made products on Amcho Pasro
               </p>
             </div>
 
@@ -136,7 +135,7 @@
             <form
               class="auth-form"
               method="POST"
-              action="{{ url_for('fisherman_signup') }}"
+              action="{{ url_for('seller_signup') }}"
             >
               <!-- Personal Information -->
               <div class="form-section">
@@ -229,7 +228,7 @@
                     id="storeName"
                     name="storeName"
                     required
-                    placeholder="e.g., Ocean Fresh Seafood"
+                    placeholder="e.g., Goa Handmade Collective"
                   />
                 </div>
 
@@ -240,7 +239,7 @@
                     id="storeLocation"
                     name="storeLocation"
                     required
-                    placeholder="e.g., 123 Harbor Street, Near Fish Market"
+                    placeholder="e.g., 123 Market Lane, Near Panaji Market"
                   />
                 </div>
 
@@ -251,8 +250,18 @@
                     id="storeCity"
                     name="storeCity"
                     required
-                    placeholder="e.g., Mumbai, Goa, Kerala"
+                    placeholder="e.g., Panaji, Mapusa, Margao"
                   />
+                </div>
+                <div class="form-group">
+                  <label for="storeImage">Store Profile Image (optional)</label>
+                  <input
+                    type="file"
+                    id="storeImage"
+                    name="storeImage"
+                    accept="image/*"
+                  />
+                  <small>If not uploaded, a default image will be used.</small>
                 </div>
 
                 <!-- Shop Location Picker -->
@@ -316,7 +325,7 @@
               </div>
 
               <button type="submit" class="auth-button">
-                Create Fisherman Account
+                Create Seller Account
               </button>
 
               <div class="auth-divider">

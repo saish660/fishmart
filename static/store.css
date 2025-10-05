@@ -1,6 +1,6 @@
 .store-header {
   background: var(--primary-color);
-  color: white;
+  color: var(--white);
   padding: 7rem 1rem 3rem 1rem;
   text-align: center;
   margin-bottom: 2rem;
@@ -34,15 +34,15 @@
 
 .section-title {
   font-size: 1.8rem;
-  color: #2c3e50;
+  color: var(--dark-blue);
   margin: 2rem 0 1rem 0;
   padding-bottom: 0.5rem;
-  border-bottom: 2px solid #3498db;
+  border-bottom: 2px solid var(--blue);
 }
 
 .review-form {
-  background: white;
-  border: 2px solid #e9ecef;
+  background: var(--white);
+  border: 2px solid var(--light-border);
   border-radius: 12px;
   padding: 2rem;
   margin-bottom: 2rem;
@@ -61,7 +61,7 @@
 
 .rating-input label {
   font-size: 2rem;
-  color: #ddd;
+  color: var(--border-gray);
   cursor: pointer;
   transition: color 0.3s;
 }
@@ -69,12 +69,12 @@
 .rating-input input[type="radio"]:checked ~ label,
 .rating-input label:hover ~ label,
 .rating-input label:hover {
-  color: #ffd700;
+  color: var(--gold);
 }
 
 .review-item {
-  background: white;
-  border: 1px solid #e9ecef;
+  background: var(--white);
+  border: 1px solid var(--light-border);
   border-radius: 12px;
   padding: 1.5rem;
   margin-bottom: 1rem;
@@ -89,31 +89,31 @@
 
 .reviewer-name {
   font-weight: bold;
-  color: #2c3e50;
+  color: var(--dark-blue);
 }
 
 .review-rating {
-  color: #ffd700;
+  color: var(--gold);
   font-size: 1.2rem;
 }
 
 .review-date {
-  color: #6c757d;
+  color: var(--gray-6c);
   font-size: 0.9rem;
 }
 
 .review-text {
-  color: #555;
+  color: var(--text-dark);
   line-height: 1.6;
 }
 
 .no-reviews,
 .no-products {
   text-align: center;
-  color: #6c757d;
+  color: var(--gray-6c);
   font-style: italic;
   padding: 2rem;
-  background: #f8f9fa;
+  background: var(--medium-gray);
   border-radius: 8px;
 }
 
@@ -121,8 +121,8 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  background: #6c757d;
-  color: white;
+  background: var(--gray-6c);
+  color: var(--white);
   padding: 0.75rem 1.5rem;
   text-decoration: none;
   border-radius: 6px;
@@ -131,8 +131,8 @@
 }
 
 .back-button:hover {
-  background: #5a6268;
-  color: white;
+  background: var(--gray-5a);
+  color: var(--white);
 }
 
 .form-group {
@@ -143,13 +143,13 @@
   display: block;
   margin-bottom: 0.5rem;
   font-weight: 600;
-  color: #2c3e50;
+  color: var(--dark-blue);
 }
 
 .form-group textarea {
   width: 100%;
   padding: 0.75rem;
-  border: 2px solid #e9ecef;
+  border: 2px solid var(--light-border);
   border-radius: 6px;
   font-family: inherit;
   resize: vertical;
@@ -157,8 +157,8 @@
 }
 
 .btn-submit {
-  background: #28a745;
-  color: white;
+  background: var(--green);
+  color: var(--white);
   padding: 0.75rem 2rem;
   border: none;
   border-radius: 6px;
@@ -168,14 +168,14 @@
 }
 
 .btn-submit:hover {
-  background: #218838;
+  background: var(--green-dark);
 }
 
 .existing-review-notice {
-  background: #fff3cd;
-  border: 1px solid #ffeaa7;
+  background: var(--yellow-bg);
+  border: 1px solid var(--yellow-border);
   border-radius: 6px;
   padding: 1rem;
   margin-bottom: 1rem;
-  color: #856404;
+  color: var(--brown);
 }

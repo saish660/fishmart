@@ -1,15 +1,45 @@
 @import url("https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap");
 
 :root {
-  --primary-color: #70a34c;
-  --primary-light: #cbff86;
-  --primary-dark: #8bb929;
-  --primary-darker: #5f8d1f;
+  --primary-color: #b86262;
+  --primary-light: #ffa7a7;
+  --primary-dark: #b94646;
+  --primary-darker: #8e3232;
+  --white-d2: #ffffffd2;
+  --pink-shadow: #ffcece;
+  --white-10: rgba(255, 255, 255, 0.1);
+  --white-20: rgba(255, 255, 255, 0.2);
+  --white-90: rgba(255, 255, 255, 0.9);
+  --light-gray-80: rgba(241, 241, 241, 0.8);
+  --nav-bg: rgb(80, 44, 44);
+  --blue: #3498db;
+  --light-border: #e9ecef;
+  --dark-blue: #2c3e50;
+  --gold: #ffd700;
+  --gray-6c: #6c757d;
+  --gray-5a: #5a6268;
+  --green: #28a745;
+  --green-dark: #218838;
+  --yellow-bg: #fff3cd;
+  --yellow-border: #ffeaa7;
+  --brown: #856404;
+  --slate-900: #0f172a;
+  --slate-500: #64748b;
+  --slate-200: #e2e8f0;
+  --slate-100: #f1f5f9;
+  --slate-700: #334155;
+  --slate-400: #475569;
+  --green-light: #ffcbcb;
+  --green-bright: #ffa7a7;
+  --gray-888: #888;
+  --green-accent: #dd5757;
+  --google-red: #db4437;
+  --facebook-blue: #4267b2;
 
-  --secondary-color: #82db34;
-  --secondary-light: #b6f182;
-  --secondary-dark: #3c4f13;
-  --secondary-darker: #21300a;
+  --secondary-color: #db3434;
+  --secondary-light: #f18282;
+  --secondary-dark: #4f1313;
+  --secondary-darker: #300a0a;
 
   --white: #ffffff;
   --light-gray: #ecf0f1;
@@ -23,7 +53,7 @@
   --success-color: #27ae60;
   --warning-color: #f39c12;
 
-  --shadow-light: #d4ffae;
+  --shadow-light: #ffaeae;
   --shadow-medium: rgba(0, 0, 0, 0.15);
   --shadow-dark: rgba(0, 0, 0, 0.2);
   --shadow-darker: rgba(0, 0, 0, 0.3);
@@ -61,7 +91,7 @@ body {
   left: 50%;
   transform: translate(-50%);
   z-index: 999;
-  background: rgba(67, 80, 44, 1);
+  background: rgb(80, 44, 44);
   border-radius: 15px;
   width: 90%;
   padding: 0 20px;

@@ -15,7 +15,7 @@
 }
 
 .control-group.small label {
-  color: #334155;
+  color: var(--slate-700);
   font-size: 0.95rem;
 }
 
@@ -23,7 +23,7 @@
   flex: 1 1 420px;
   min-width: 220px;
   padding: 10px 12px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--slate-200);
   border-radius: 8px;
 }
 
@@ -34,15 +34,15 @@
 }
 
 .btn-secondary {
-  background: #f1f5f9;
-  color: #0f172a;
-  border: 1px solid #e2e8f0;
+  background: var(--slate-100);
+  color: var(--slate-900);
+  border: 1px solid var(--slate-200);
   border-radius: 8px;
   padding: 10px 12px;
   cursor: pointer;
 }
 .btn-secondary:hover {
-  background: #e2e8f0;
+  background: var(--slate-200);
 }
 
 /* Card list uses products-grid styling */
@@ -51,14 +51,14 @@
 }
 
 .store-meta {
-  color: #475569;
+  color: var(--slate-400);
   font-size: 0.95rem;
 }
 
 .distance-chip {
   display: inline-block;
-  background: #e2e8f0;
-  color: #0f172a;
+  background: var(--slate-200);
+  color: var(--slate-900);
   padding: 2px 8px;
   border-radius: 999px;
   font-size: 0.85rem;

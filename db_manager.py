@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Database management script for Fishmart Flask app
+Database management script for Amcho Pasro Flask app
 Usage: python db_manager.py [command]
 
 Commands:
@@ -25,7 +25,10 @@ from flask_login import UserMixin
 
 # Recreate app context for database operations
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///fishmart.db'
+# Use instance folder DB like the app
+os.makedirs(app.instance_path, exist_ok=True)
+db_path = os.path.join(app.instance_path, 'amcho_pasro.db')
+app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 

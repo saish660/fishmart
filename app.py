@@ -1,9 +1,14 @@
+## ...existing code...
+
+# Place this route after app and db initialization
+
 from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 import os
+import shutil
 from datetime import datetime
 from sqlalchemy import text
 from secrets import token_hex
@@ -15,7 +20,19 @@ app.secret_key = "REMOVE_ME" #token_hex(32)
 
 # Database configuration: use the instance folder DB if available
 os.makedirs(app.instance_path, exist_ok=True)
-db_path = os.path.join(app.instance_path, 'fishmart.db')
+db_path = os.path.join(app.instance_path, 'amcho_pasro.db')
+# If migrating from an older DB name, copy any existing .db in instance to the new path
+if not os.path.exists(db_path):
+    try:
+        for _fname in os.listdir(app.instance_path):
+            if _fname.lower().endswith('.db'):
+                _src = os.path.join(app.instance_path, _fname)
+                if os.path.abspath(_src) != os.path.abspath(db_path):
+                    shutil.copyfile(_src, db_path)
+                break
+    except Exception:
+        # Non-fatal: on error we'll create a fresh DB later
+        pass
 app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -39,9 +56,9 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(80), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(200), nullable=False)
-    user_type = db.Column(db.String(20), nullable=False, default='buyer')  # 'buyer' or 'fisherman'
+    user_type = db.Column(db.String(20), nullable=False, default='buyer')  # 'buyer' or 'seller'
     
-    # Fisherman/Supplier specific fields
+    # Seller specific fields
     store_name = db.Column(db.String(150), nullable=True)
     store_location = db.Column(db.String(200), nullable=True)
     store_city = db.Column(db.String(100), nullable=True)
@@ -49,6 +66,7 @@ class User(UserMixin, db.Model):
     store_latitude = db.Column(db.Float, nullable=True)
     store_longitude = db.Column(db.Float, nullable=True)
     store_address = db.Column(db.Text, nullable=True)
+    store_image = db.Column(db.String(255), nullable=True)  # Store profile image
 
     def __repr__(self):
         return f'<User {self.email}>'
@@ -61,24 +79,28 @@ class User(UserMixin, db.Model):
     def get_by_email(email):
         return User.query.filter_by(email=email).first()
     
+    def is_seller(self):
+        return self.user_type == 'seller'
+
+    # Backward-compat alias if any old templates linger
     def is_fisherman(self):
-        return self.user_type == 'fisherman'
+        return self.is_seller()
     
     def get_store_rating(self):
         """Calculate average rating for this store"""
-        if not self.is_fisherman():
+        if not self.is_seller():
             return None
-        
+
         reviews = StoreReview.query.filter_by(store_owner_id=self.id).all()
         if not reviews:
             return None
-        
+
         total_rating = sum(review.rating for review in reviews)
         return round(total_rating / len(reviews), 1)
     
     def get_review_count(self):
         """Get total number of reviews for this store"""
-        if not self.is_fisherman():
+        if not self.is_seller():
             return 0
         return StoreReview.query.filter_by(store_owner_id=self.id).count()
 
@@ -87,7 +109,7 @@ class Product(db.Model):
     title = db.Column(db.String(200), nullable=False)
     price = db.Column(db.Float, nullable=False)
     quantity = db.Column(db.Integer, default=1)
-    city = db.Column(db.String(100), nullable=False)
+    # city field removed: use store location from User
     description = db.Column(db.Text, nullable=True)
     image_filename = db.Column(db.String(255), nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
@@ -132,8 +154,36 @@ def index():
 @app.route("/products")
 @login_required
 def products():
-    all_products = Product.query.order_by(Product.created_at.desc()).all()
-    return render_template("products.html", products=all_products)
+    q = request.args.get("q", "").strip()
+    query = Product.query
+    products = []
+    if q:
+        # Get all products matching either field
+        raw_products = query.filter(
+            (Product.title.ilike(f"%{q}%")) |
+            (Product.description.ilike(f"%{q}%"))
+        ).all()
+        # Rank results: title match > description match > recency
+        def score(product):
+            title = (product.title or "").lower()
+            desc = (product.description or "").lower()
+            ql = q.lower()
+            score = 0
+            if ql in title:
+                score += 100
+                # Bonus for exact match
+                if title == ql:
+                    score += 50
+            if ql in desc:
+                score += 30
+            # Recency bonus (newer = higher)
+            age_days = (datetime.utcnow() - product.created_at).days
+            score += max(0, 20 - age_days)
+            return score
+        products = sorted(raw_products, key=score, reverse=True)
+    else:
+        products = query.order_by(Product.created_at.desc()).all()
+    return render_template("products.html", products=products)
 
 @app.route("/about")
 def about():
@@ -201,8 +251,8 @@ def signup():
     
     return render_template("signup.html")
 
-@app.route("/fisherman-signup", methods=["GET", "POST"])
-def fisherman_signup():
+@app.route("/seller-signup", methods=["GET", "POST"])
+def seller_signup():
     # If user is already logged in, redirect to products page
     if current_user.is_authenticated:
         return redirect(url_for("products"))
@@ -217,6 +267,7 @@ def fisherman_signup():
         store_name = request.form.get("storeName", "").strip()
         store_location = request.form.get("storeLocation", "").strip()
         store_city = request.form.get("storeCity", "").strip()
+        image_file = request.files.get("storeImage")
         # Location picker hidden inputs
         lat_raw = request.form.get("latitude")
         lng_raw = request.form.get("longitude")
@@ -232,7 +283,6 @@ def fisherman_signup():
         # If address provided and store_location empty, use address as store_location (truncate to 200)
         if addr_full and not store_location:
             store_location = addr_full[:200]
-        
         if not all([first_name, last_name, email, password, store_name, store_location, store_city]):
             flash("All fields are required", "error")
         elif password != confirm_password:
@@ -243,21 +293,34 @@ def fisherman_signup():
             flash("An account with this email already exists", "error")
         else:
             password_hash = generate_password_hash(password)
+            store_image = None
+            if image_file and image_file.filename != '' and allowed_file(image_file.filename):
+                store_img_folder = os.path.join(app.config['UPLOAD_FOLDER'], 'store_images')
+                if not os.path.exists(store_img_folder):
+                    os.makedirs(store_img_folder)
+                filename = secure_filename(image_file.filename)
+                timestamp = datetime.now().strftime("%Y%m%d_%H%M%S_")
+                filename = timestamp + filename
+                image_file.save(os.path.join(store_img_folder, filename))
+                store_image = 'store_images/' + filename
+            else:
+                store_image = "default_store_img.png"  # stored in static/images, referenced directly when no uploaded file
             new_user = User(
                 username=username,
                 email=email,
                 password_hash=password_hash,
-                user_type='fisherman',
+                user_type='seller',
                 store_name=store_name,
                 store_location=store_location,
                 store_city=store_city,
                 store_latitude=store_lat,
                 store_longitude=store_lng,
-                store_address=addr_full or None
+                store_address=addr_full or None,
+                store_image=store_image
             )
             db.session.add(new_user)
             db.session.commit()
-            flash("Fisherman account created successfully! Please log in.", "success")
+            flash("Seller account created successfully! Please log in.", "success")
             return redirect(url_for("login"))
     
     return render_template("fisherman-signup.html")
@@ -265,16 +328,15 @@ def fisherman_signup():
 @app.route("/post-product", methods=["GET", "POST"])
 @login_required
 def post_product():
-    # Check if user is a fisherman
-    if not current_user.is_fisherman():
-        flash("Only fishermen/suppliers can post products. Please register as a fisherman.", "error")
+    # Check if user is a seller
+    if not current_user.is_seller():
+        flash("Only sellers can post products. Please register as a seller.", "error")
         return redirect(url_for("index"))
     
     if request.method == "POST":
         title = request.form.get("title", "").strip()
         price = request.form.get("price", "")
         quantity = request.form.get("quantity", "1")
-        city = request.form.get("city", "").strip()
         description = request.form.get("description", "").strip()
         
         # Handle file upload
@@ -282,16 +344,19 @@ def post_product():
         if 'image' in request.files:
             file = request.files['image']
             if file and file.filename != '' and allowed_file(file.filename):
+                prod_img_folder = os.path.join(app.config['UPLOAD_FOLDER'], 'product_images')
+                if not os.path.exists(prod_img_folder):
+                    os.makedirs(prod_img_folder)
                 filename = secure_filename(file.filename)
                 # Add timestamp to avoid filename conflicts
                 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S_")
                 filename = timestamp + filename
-                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-                image_filename = filename
+                file.save(os.path.join(prod_img_folder, filename))
+                image_filename = 'product_images/' + filename
         
         # Validation
-        if not title or not price or not city:
-            flash("Title, price, and city are required fields", "error")
+        if not title or not price:
+            flash("Title and price are required fields", "error")
         else:
             try:
                 price_float = float(price)
@@ -307,7 +372,6 @@ def post_product():
                         title=title,
                         price=price_float,
                         quantity=quantity_int,
-                        city=city,
                         description=description,
                         image_filename=image_filename,
                         user_id=current_user.id
@@ -327,13 +391,71 @@ def product_detail(product_id):
     product = Product.query.get_or_404(product_id)
     return render_template("product-detail.html", product=product)
 
+@app.route("/my-store")
+@login_required
+def my_store():
+    """Convenience route for templates linking to the current user's store.
+    If the logged-in user is a seller, redirect to their store page.
+    Otherwise, flash a message and redirect to products.
+    """
+    if not current_user.is_seller():
+        flash("You don't have a store. Register as a seller to create one.", "error")
+        return redirect(url_for("products"))
+    return redirect(url_for("store_page", store_owner_id=current_user.id))
+
+# Edit store details (seller only)
+@app.route("/edit-store", methods=["GET", "POST"])
+@login_required
+def edit_store():
+    if not current_user.is_seller():
+        flash("Only sellers can edit store details.", "error")
+        return redirect(url_for("products"))
+    user = current_user
+    if request.method == "POST":
+        store_name = request.form.get("store_name", "").strip()
+        store_location = request.form.get("store_location", "").strip()
+        store_city = request.form.get("store_city", "").strip()
+        lat_raw = request.form.get("latitude")
+        lng_raw = request.form.get("longitude")
+        addr_full = request.form.get("address", "").strip()
+        image_file = request.files.get("store_image")
+        try:
+            store_lat = float(lat_raw) if lat_raw not in (None, "") else None
+        except ValueError:
+            store_lat = None
+        try:
+            store_lng = float(lng_raw) if lng_raw not in (None, "") else None
+        except ValueError:
+            store_lng = None
+        # Update image if provided
+        if image_file and image_file.filename != '' and allowed_file(image_file.filename):
+            store_img_folder = os.path.join(app.config['UPLOAD_FOLDER'], 'store_images')
+            if not os.path.exists(store_img_folder):
+                os.makedirs(store_img_folder)
+            filename = secure_filename(image_file.filename)
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S_")
+            filename = timestamp + filename
+            image_file.save(os.path.join(store_img_folder, filename))
+            user.store_image = 'store_images/' + filename
+        # Update fields
+        user.store_name = store_name or user.store_name
+        user.store_location = store_location or user.store_location
+        user.store_city = store_city or user.store_city
+        user.store_latitude = store_lat if store_lat is not None else user.store_latitude
+        user.store_longitude = store_lng if store_lng is not None else user.store_longitude
+        user.store_address = addr_full or user.store_address
+        db.session.commit()
+        flash("Store details updated successfully!", "success")
+        return redirect(url_for("my_store"))
+    return render_template("edit-store.html", user=user)
+
 @app.route("/store/<int:store_owner_id>")
 @login_required
 def store_page(store_owner_id):
     store_owner = User.query.get_or_404(store_owner_id)
     
-    # Check if user is a fisherman/store owner
-    if not store_owner.is_fisherman():
+    # Check if user is a seller/store owner
+    if not store_owner.is_seller():
         flash("This user is not a store owner", "error")
         return redirect(url_for("products"))
     
@@ -361,9 +483,9 @@ def store_page(store_owner_id):
 @login_required
 def store_finder():
     """Buyer section: show all stores on a map with cards below."""
-    fishermen = User.query.filter_by(user_type='fisherman').all()
+    sellers = User.query.filter_by(user_type='seller').all()
     stores = []
-    for u in fishermen:
+    for u in sellers:
         stores.append({
             'id': u.id,
             'name': u.store_name or u.username,
@@ -449,7 +571,7 @@ def geocode_search():
             },
             headers={
                 # Provide a valid UA as required by Nominatim policy
-                "User-Agent": "FishmartApp/1.0 (+http://localhost)",
+                "User-Agent": "AmchoPasroApp/1.0 (+http://localhost)",
                 "Accept": "application/json",
             },
             timeout=10,
@@ -478,7 +600,7 @@ def geocode_reverse():
                 "addressdetails": 1,
             },
             headers={
-                "User-Agent": "FishmartApp/1.0 (+http://localhost)",
+                "User-Agent": "AmchoPasroApp/1.0 (+http://localhost)",
                 "Accept": "application/json",
             },
             timeout=10,
@@ -516,6 +638,9 @@ if __name__ == "__main__":
                 if 'store_address' not in cols:
                     con.execute(text("ALTER TABLE user ADD COLUMN store_address TEXT"))
                     print("Added column: user.store_address")
+                # Migrate old user_type 'fisherman' to 'seller'
+                con.execute(text("UPDATE user SET user_type='seller' WHERE user_type='fisherman'"))
+                print("Migrated user_type 'fisherman' -> 'seller' (if any)")
         except Exception as e:
             print("Migration check failed or not applicable:", e)
     app.run(debug=True, host="0.0.0.0", port=5000)

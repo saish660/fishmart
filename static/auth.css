@@ -254,13 +254,13 @@ main {
 }
 
 .google-btn:hover {
-  border-color: #db4437;
-  color: #db4437;
+  border-color: var(--google-red);
+  color: var(--google-red);
 }
 
 .facebook-btn:hover {
-  border-color: #4267b2;
-  color: #4267b2;
+  border-color: var(--facebook-blue);
+  color: var(--facebook-blue);
 }
 
 .auth-footer {
@@ -350,13 +350,13 @@ main {
   }
 }
 
-/* Form Sections for Fisherman Signup */
+/* Form Sections for Seller Signup */
 .form-section {
   margin-bottom: 30px;
   padding: 20px;
-  border: 1px solid #e9ecef;
+  border: 1px solid var(--light-border);
   border-radius: var(--border-radius);
-  background-color: #f8f9fa;
+  background-color: var(--medium-gray);
 }
 
 .section-title {
@@ -369,10 +369,10 @@ main {
 }
 
 .auth-container {
-  max-width: 600px; /* Increase max width for fisherman signup */
+  max-width: 600px; /* Increase max width for seller signup */
 }
 
-/* Responsive adjustments for fisherman signup */
+/* Responsive adjustments for seller signup */
 @media screen and (max-width: 768px) {
   .form-section {
     padding: 15px;

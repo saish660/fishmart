@@ -7,30 +7,34 @@
 // - Reverse geocoding on marker move or geolocate
 // - Live display of lat/lng/address and hidden inputs for form submission
 
-(function () {
-  const MAP_ID = "shop-map";
-  const latInput = document.getElementById("latitude");
-  const lngInput = document.getElementById("longitude");
-  const addrInputHidden = document.getElementById("address");
-  const addrSearch = document.getElementById("addressSearch");
-  const addrDatalist = document.getElementById("addressSuggestions");
-  const detectBtn = document.getElementById("detectLocationBtn");
-  const readLat = document.getElementById("current-lat");
-  const readLng = document.getElementById("current-lng");
-  const readAddr = document.getElementById("current-address");
-
-  // If the page doesn't have the location picker section, bail
-  const mapEl = document.getElementById(MAP_ID);
-  if (!mapEl || !window.L) return;
+window.initLocationPicker = function (config) {
+  if (!config || !window.L) return;
+  const mapEl = document.getElementById(config.mapId);
+  if (!mapEl) return;
+  const latInput = document.getElementById(config.latInput);
+  const lngInput = document.getElementById(config.lngInput);
+  const addrInputHidden = document.getElementById(config.addressInput);
+  const addrSearch = document.getElementById(config.addressSearch);
+  const addrDatalist = document.getElementById(config.addressSuggestions);
+  const detectBtn = document.getElementById(config.detectBtn);
+  const readLat = document.getElementById(config.latReadout);
+  const readLng = document.getElementById(config.lngReadout);
+  const readAddr = document.getElementById(config.addressReadout);
 
   // Default view: world/country level
-  const DEFAULT_CENTER = [20.0, 0.0]; // near equator, global view
+  const DEFAULT_CENTER = [20.0, 0.0];
   const DEFAULT_ZOOM = 2;
 
   // Create map
-  const map = L.map(MAP_ID, {
+  const map = L.map(config.mapId, {
     worldCopyJump: true,
-  }).setView(DEFAULT_CENTER, DEFAULT_ZOOM);
+  }).setView(
+    [
+      config.initialLat || DEFAULT_CENTER[0],
+      config.initialLng || DEFAULT_CENTER[1],
+    ],
+    config.initialLat && config.initialLng ? 15 : DEFAULT_ZOOM
+  );
 
   // Add OSM tiles
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -40,7 +44,13 @@
   }).addTo(map);
 
   // Create a draggable marker; hidden until we know a position
-  let marker = L.marker(DEFAULT_CENTER, { draggable: true, autoPan: true });
+  let marker = L.marker(
+    [
+      config.initialLat || DEFAULT_CENTER[0],
+      config.initialLng || DEFAULT_CENTER[1],
+    ],
+    { draggable: true, autoPan: true }
+  );
   let markerAdded = false;
 
   function showMarker(lat, lng) {
@@ -54,19 +64,21 @@
   }
 
   function setReadout(lat, lng, addressText) {
-    if (lat != null) {
+    if (lat != null && readLat && latInput) {
       readLat.textContent = Number(lat).toFixed(6);
       latInput.value = String(lat);
     }
-    if (lng != null) {
+    if (lng != null && readLng && lngInput) {
       readLng.textContent = Number(lng).toFixed(6);
       lngInput.value = String(lng);
     }
-    if (addressText) {
+    if (addressText && readAddr && addrInputHidden) {
       readAddr.textContent = addressText;
       addrInputHidden.value = addressText;
       // Optionally sync visible storeLocation if present
-      const storeLocation = document.getElementById("storeLocation");
+      const storeLocation = document.getElementById(
+        config.storeLocationInput || "storeLocation"
+      );
       if (storeLocation && !storeLocation.value) {
         storeLocation.value = addressText;
       }
@@ -187,11 +199,13 @@
   let lastQuery = "";
   function updateDatalist(items) {
     datalistItems = items || [];
-    addrDatalist.innerHTML = "";
-    for (let i = 0; i < datalistItems.length; i++) {
-      const opt = document.createElement("option");
-      opt.value = datalistItems[i].label;
-      addrDatalist.appendChild(opt);
+    if (addrDatalist) {
+      addrDatalist.innerHTML = "";
+      for (let i = 0; i < datalistItems.length; i++) {
+        const opt = document.createElement("option");
+        opt.value = datalistItems[i].label;
+        addrDatalist.appendChild(opt);
+      }
     }
   }
 
@@ -238,4 +252,4 @@
       setReadout(lat, lng, addr || "");
     }
   })();
-})();
+};
