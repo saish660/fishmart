@@ -167,6 +167,11 @@
 
           <div class="product-info">
             <h1 class="product-title-detail">{{ product.title }}</h1>
+            {% if product.category %}
+            <div style="margin:.25rem 0 1rem 0;">
+              <a href="{{ url_for('category_detail', slug=product.category.slug) }}" style="background:var(--light-gray,#eee); padding:.35rem .65rem; border-radius:16px; font-size:.7rem; text-decoration:none; text-transform:uppercase; letter-spacing:.05em;">{{ product.category.name }}</a>
+            </div>
+            {% endif %}
             <div class="product-price-detail">
               ₹{{ "%.2f"|format(product.price) }}
             </div>

@@ -230,6 +230,19 @@
 
             <div class="form-row">
               <div class="form-group">
+                <label for="productCategory">Category</label>
+                <select id="productCategory" name="category">
+                  <option value="">-- Select a category --</option>
+                  {% for cat in categories %}
+                    <option value="{{ cat.id }}">{{ cat.name }}</option>
+                  {% endfor %}
+                </select>
+                <small class="form-hint">Choose the category that best fits your product.</small>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
                 <label for="productImage">Product Image *</label>
                 <input
                   type="file"

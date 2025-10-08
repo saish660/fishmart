@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Categories - Amcho Pasro</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='styles.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='products.css') }}"
+    />
+    <style>
+      .categories-grid {
+        display: grid;
+        gap: 1rem;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        margin-top: 1.5rem;
+      }
+      .category-card {
+        background: #fff;
+        border: 1px solid var(--border-gray, #ddd);
+        padding: 1rem;
+        border-radius: 8px;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        position: relative;
+        transition: 0.2s;
+        cursor: pointer;
+      }
+      .category-card:hover {
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
+        transform: translateY(-2px);
+      }
+      .category-name {
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+      }
+      .category-count {
+        font-size: 0.75rem;
+        color: #555;
+      }
+      .page-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 1rem;
+      }
+      .breadcrumb {
+        font-size: 0.8rem;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar">
+      <div class="navbar-container">
+        <div class="navbar-brand">
+          <a href="{{ url_for('index') }}" class="brand-link">Amcho Pasro</a>
+        </div>
+        <ul class="navbar-menu">
+          <li class="navbar-item">
+            <a href="{{ url_for('products') }}" class="navbar-link">Products</a>
+          </li>
+          <li class="navbar-item">
+            <a
+              href="{{ url_for('categories_page') }}"
+              class="navbar-link active"
+              >Categories</a
+            >
+          </li>
+          <li class="navbar-item">
+            <a href="{{ url_for('store_finder') }}" class="navbar-link"
+              >Find Stores</a
+            >
+          </li>
+          {% if current_user.is_authenticated and current_user.is_seller() %}
+          <li class="navbar-item">
+            <a href="{{ url_for('post_product') }}" class="navbar-link"
+              >Post Product</a
+            >
+          </li>
+          <li class="navbar-item">
+            <a href="{{ url_for('my_store') }}" class="navbar-link">My Store</a>
+          </li>
+          {% endif %} {% if current_user.is_authenticated %}
+          <li class="navbar-item">
+            <a href="{{ url_for('logout') }}" class="navbar-link">Logout</a>
+          </li>
+          {% else %}
+          <li class="navbar-item">
+            <a href="{{ url_for('login') }}" class="navbar-link">Login</a>
+          </li>
+          {% endif %}
+        </ul>
+        <div class="mobile-menu-toggle" id="mobile-menu-toggle">
+          <span class="bar"></span><span class="bar"></span
+          ><span class="bar"></span>
+        </div>
+      </div>
+    </nav>
+
+    <main class="main-content">
+      <section class="page-section">
+        <div class="page-header">
+          <h1>Categories</h1>
+          <div class="breadcrumb">
+            <a href="{{ url_for('products') }}">Products</a> / Categories
+          </div>
+        </div>
+        <p>Select a category to view products.</p>
+
+        {% with messages = get_flashed_messages(with_categories=true) %} {% if
+        messages %}
+        <div class="flash-messages">
+          {% for category, message in messages %}
+          <div class="flash-message flash-{{ category }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+        {% endif %} {% endwith %}
+
+        <div class="categories-grid">
+          {% for cat in categories %}
+          <div
+            class="category-card"
+            onclick="location.href='{{ url_for('category_detail', slug=cat.slug) }}'"
+          >
+            <div class="category-name">{{ cat.name }}</div>
+            <div class="category-count">
+              {{ cat.product_count }} product{{ 's' if cat.product_count != 1
+              else '' }}
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </section>
+    </main>
+
+    <script src="{{ url_for('static', filename='main.js') }}"></script>
+  </body>
+</html>

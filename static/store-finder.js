@@ -12,6 +12,7 @@
   const centerLng = document.getElementById("center-lng");
   const centerAddr = document.getElementById("center-addr");
   const resetBtn = document.getElementById("finder-reset");
+  const storeNameFilter = document.getElementById("store-name-filter");
 
   let stores = [];
   try {
@@ -204,6 +205,28 @@
     renderCards(list, center);
   }
 
+  function filterStoresByName(q) {
+    const term = (q || "").trim().toLowerCase();
+    if (!term) return stores.slice();
+    return stores.filter((s) => (s.name || "").toLowerCase().includes(term));
+  }
+
+  function renderFilteredStores() {
+    const q = storeNameFilter ? storeNameFilter.value : "";
+    const list = filterStoresByName(q);
+    clearMarkers();
+    const bounds = [];
+    list.forEach((s) => {
+      const m = addStoreMarker(s);
+      if (m) bounds.push(m.getLatLng());
+    });
+    if (bounds.length > 0) {
+      // Do not force zoom out drastically if user already focused somewhere; just fit filtered
+      map.fitBounds(L.latLngBounds(bounds), { padding: [20, 20] });
+    }
+    renderCards(list, null);
+  }
+
   let typingTimer = null;
   const TYPING_DELAY = 250;
   let lastResults = [];
@@ -261,7 +284,16 @@
     centerLat.textContent = "—";
     centerLng.textContent = "—";
     centerAddr.textContent = "—";
+    if (storeNameFilter) storeNameFilter.value = ""; // clear name filter
     showAllStores(null);
+  });
+
+  // Store name filtering (debounced)
+  let storeFilterTimer = null;
+  const STORE_FILTER_DELAY = 200;
+  storeNameFilter?.addEventListener("input", () => {
+    if (storeFilterTimer) clearTimeout(storeFilterTimer);
+    storeFilterTimer = setTimeout(renderFilteredStores, STORE_FILTER_DELAY);
   });
 
   // Initial: add markers for all stores and fit bounds, then render all cards

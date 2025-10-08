@@ -153,6 +153,17 @@
       <section class="page-section">
         <h1>Browse Listings</h1>
 
+        {% if categories %}
+        <div class="category-filter" style="margin:1rem 0; display:flex; flex-wrap:wrap; gap:.5rem; align-items:center;">
+          <strong style="margin-right:.5rem;">Categories:</strong>
+          <a href="{{ url_for('products') }}" class="badge {{ 'active' if not current_category else '' }}" style="padding:.4rem .75rem; border-radius:20px; background: var(--light-gray,#eee); text-decoration:none; font-size:.85rem;">All</a>
+          {% for cat in categories %}
+            <a href="{{ url_for('products') }}?category={{ cat.slug }}" class="badge {{ 'active' if current_category and (current_category.id == cat.id) else '' }}" style="padding:.4rem .75rem; border-radius:20px; background: {% if current_category and current_category.id == cat.id %}var(--primary,#0077cc){% else %}var(--light-gray,#eee){% endif %}; color:{% if current_category and current_category.id == cat.id %}#fff{% else %}inherit{% endif %}; text-decoration:none; font-size:.85rem;">{{ cat.name }}</a>
+          {% endfor %}
+          <a href="{{ url_for('categories_page') }}" style="margin-left:auto; font-size:.8rem;">View all &raquo;</a>
+        </div>
+        {% endif %}
+
         <!-- Search Form -->
         <form
           method="GET"
@@ -211,6 +222,9 @@
             </div>
             <div class="product-content">
               <h3 class="product-title">{{ product.title }}</h3>
+              {% if product.category %}
+                <div class="product-category" style="font-size:.7rem; text-transform:uppercase; letter-spacing:.05em; background:var(--light-gray,#f0f0f0); display:inline-block; padding:.25rem .5rem; border-radius:4px; margin-bottom:.4rem;">{{ product.category.name }}</div>
+              {% endif %}
               <div class="product-price">
                 ₹{{ "%.2f"|format(product.price) }}
               </div>

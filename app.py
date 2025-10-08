@@ -114,9 +114,12 @@ class Product(db.Model):
     image_filename = db.Column(db.String(255), nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    # Category relationship
+    category_id = db.Column(db.Integer, db.ForeignKey('category.id'), nullable=True, index=True)
     
     # Relationship with User
     user = db.relationship('User', backref=db.backref('products', lazy=True))
+    category = db.relationship('Category', backref=db.backref('products', lazy=True))
     
     def __repr__(self):
         return f'<Product {self.title}>'
@@ -144,6 +147,22 @@ def allowed_file(filename):
 def load_user(user_id):
     return User.get(user_id)
 
+class Category(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(120), nullable=False, unique=True)
+    slug = db.Column(db.String(140), nullable=False, unique=True)
+
+    def __repr__(self):
+        return f"<Category {self.name}>"
+
+    @staticmethod
+    def get_by_slug(slug):
+        return Category.query.filter_by(slug=slug).first()
+
+    @staticmethod
+    def all():
+        return Category.query.order_by(Category.name.asc()).all()
+
 @app.route("/")
 def index():
     # If user is already logged in, redirect to products page
@@ -155,7 +174,20 @@ def index():
 @login_required
 def products():
     q = request.args.get("q", "").strip()
+    category_filter = request.args.get("category")  # category slug or id
     query = Product.query
+    # Join category for eager access if filtering or listing all
+    if category_filter:
+        # Accept either numeric id or slug
+        from sqlalchemy.orm import joinedload
+        query = query.options(joinedload(Product.category))
+        if category_filter.isdigit():
+            query = query.filter(Product.category_id == int(category_filter))
+        else:
+            # look up category by slug
+            cat = Category.query.filter_by(slug=category_filter).first()
+            if cat:
+                query = query.filter(Product.category_id == cat.id)
     products = []
     if q:
         # Get all products matching either field
@@ -183,7 +215,41 @@ def products():
         products = sorted(raw_products, key=score, reverse=True)
     else:
         products = query.order_by(Product.created_at.desc()).all()
-    return render_template("products.html", products=products)
+    categories = Category.query.order_by(Category.name.asc()).all()
+    current_category = None
+    if category_filter:
+        if category_filter.isdigit():
+            current_category = Category.query.get(int(category_filter))
+        else:
+            current_category = Category.query.filter_by(slug=category_filter).first()
+    return render_template("products.html", products=products, categories=categories, current_category=current_category)
+
+@app.route('/categories')
+@login_required
+def categories_page():
+    cats = Category.all()
+    # Count products per category (can use relationship length or query)
+    cat_infos = []
+    for c in cats:
+        cat_infos.append({
+            'id': c.id,
+            'name': c.name,
+            'slug': c.slug,
+            'product_count': len(getattr(c, 'products', []) or []),
+        })
+    return render_template('categories.html', categories=cat_infos)
+
+@app.route('/category/<slug>')
+@login_required
+def category_detail(slug):
+    cat = Category.get_by_slug(slug)
+    if not cat:
+        flash('Category not found', 'error')
+        return redirect(url_for('categories_page'))
+    # Show products for this category
+    prods = Product.query.filter_by(category_id=cat.id).order_by(Product.created_at.desc()).all()
+    cats = Category.all()
+    return render_template('products.html', products=prods, categories=cats, current_category=cat)
 
 @app.route("/about")
 def about():
@@ -338,6 +404,7 @@ def post_product():
         price = request.form.get("price", "")
         quantity = request.form.get("quantity", "1")
         description = request.form.get("description", "").strip()
+        category_raw = request.form.get("category")  # may be id
         
         # Handle file upload
         image_filename = None
@@ -368,13 +435,26 @@ def post_product():
                     flash("Quantity must be greater than 0", "error")
                 else:
                     # Create new product
+                    # Resolve category (optional)
+                    category_id = None
+                    if category_raw:
+                        try:
+                            category_id = int(category_raw)
+                            if not Category.query.get(category_id):
+                                category_id = None
+                        except ValueError:
+                            # try slug
+                            cat = Category.query.filter_by(slug=category_raw).first()
+                            if cat:
+                                category_id = cat.id
                     new_product = Product(
                         title=title,
                         price=price_float,
                         quantity=quantity_int,
                         description=description,
                         image_filename=image_filename,
-                        user_id=current_user.id
+                        user_id=current_user.id,
+                        category_id=category_id
                     )
                     db.session.add(new_product)
                     db.session.commit()
@@ -383,7 +463,8 @@ def post_product():
             except ValueError:
                 flash("Please enter valid numbers for price and quantity", "error")
     
-    return render_template("post-product.html")
+    categories = Category.query.order_by(Category.name.asc()).all()
+    return render_template("post-product.html", categories=categories)
 
 @app.route("/product/<int:product_id>")
 @login_required
@@ -625,7 +706,8 @@ if __name__ == "__main__":
         # Lightweight migration for new columns if they don't exist (SQLite only)
         try:
             engine = db.engine
-            with engine.connect() as con:
+            # Use a transaction (BEGIN) so DDL persists reliably
+            with engine.begin() as con:
                 # Check existing columns in User table
                 res = con.execute(text("PRAGMA table_info(user)")).fetchall()
                 cols = {row[1] for row in res}
@@ -641,6 +723,39 @@ if __name__ == "__main__":
                 # Migrate old user_type 'fisherman' to 'seller'
                 con.execute(text("UPDATE user SET user_type='seller' WHERE user_type='fisherman'"))
                 print("Migrated user_type 'fisherman' -> 'seller' (if any)")
+                # Category migration
+                # Ensure category table exists
+                con.execute(text("CREATE TABLE IF NOT EXISTS category (id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(120) NOT NULL UNIQUE, slug VARCHAR(140) NOT NULL UNIQUE)"))
+                # Seed default categories if table empty
+                existing = con.execute(text("SELECT COUNT(*) FROM category")).scalar()
+                if existing == 0:
+                    default_cats = [
+                        ('Seafood', 'seafood'),
+                        ('Handicrafts', 'handicrafts'),
+                        ('Spices', 'spices'),
+                        ('Organic Produce', 'organic-produce'),
+                        ('Beverages', 'beverages'),
+                        ('Art', 'art'),
+                        ('Clothing', 'clothing'),
+                        ('Other', 'other')
+                    ]
+                    for name, slug in default_cats:
+                        try:
+                            con.execute(text("INSERT INTO category (name, slug) VALUES (:n,:s)"), {"n": name, "s": slug})
+                        except Exception:
+                            pass
+                    print("Seeded default categories")
+                # Ensure product.category_id column exists
+                pres = con.execute(text("PRAGMA table_info(product)")).fetchall()
+                pcols = {row[1] for row in pres}
+                if 'category_id' not in pcols:
+                    try:
+                        con.execute(text("ALTER TABLE product ADD COLUMN category_id INTEGER REFERENCES category(id)"))
+                        print("Added column: product.category_id")
+                    except Exception as ce:
+                        print("Failed to add product.category_id column (may already exist)", ce)
+                else:
+                    print("product.category_id already present")
         except Exception as e:
             print("Migration check failed or not applicable:", e)
     app.run(debug=True, host="0.0.0.0", port=5000)
