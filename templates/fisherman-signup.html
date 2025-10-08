@@ -365,5 +365,23 @@
       defer
     ></script>
     <script src="{{ url_for('static', filename='main.js') }}" defer></script>
+    <script>
+      window.addEventListener("DOMContentLoaded", function () {
+        if (window.initLocationPicker) {
+          window.initLocationPicker({
+            mapId: "shop-map",
+            latInput: "latitude",
+            lngInput: "longitude",
+            addressInput: "address",
+            addressSearch: "addressSearch",
+            addressSuggestions: "addressSuggestions",
+            detectBtn: "detectLocationBtn",
+            latReadout: "current-lat",
+            lngReadout: "current-lng",
+            addressReadout: "current-address",
+          });
+        }
+      });
+    </script>
   </body>
 </html>
