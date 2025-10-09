@@ -12,6 +12,8 @@
       rel="stylesheet"
       href="{{ url_for('static', filename='home.css') }}"
     />
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"/>
   </head>
   <body>
     <nav class="navbar">
@@ -121,6 +123,7 @@
     <main class="main-content has-hero">
       <section class="hero-section">
         <div class="hero-background">
+          <div class="hero-overlay"></div>
           <div class="hero-content" id="hero-content">
             <h1 class="hero-title">Welcome to Amcho Pasro</h1>
             <p class="hero-subtitle">
@@ -141,9 +144,13 @@
                 >Sign Up</a
               >
             </div>
+            <div class="hero-scroll">
+              <i class="fa-solid fa-angles-down"></i>
+            </div>
           </div>
         </div>
       </section>
+
 
       <section class="problem-section">
         <div class="container">
@@ -151,6 +158,7 @@
             <h2 class="section-title">Challenges in Finding Local Products</h2>
             <div class="problem-grid">
               <div class="feature-item">
+                <i class="fa-solid fa-question-circle fa-2x problem-icon"></i>
                 <h3>Quality Uncertainty</h3>
                 <p>
                   Shoppers struggle to discover authentic local goods and often
@@ -158,6 +166,7 @@
                 </p>
               </div>
               <div class="feature-item">
+                <i class="fa-solid fa-map-location-dot fa-2x problem-icon"></i>
                 <h3>Limited Access</h3>
                 <p>
                   Many areas lack a reliable way to browse local sellers,
@@ -165,6 +174,7 @@
                 </p>
               </div>
               <div class="feature-item">
+                <i class="fa-solid fa-tags fa-2x problem-icon"></i>
                 <h3>Price Transparency</h3>
                 <p>
                   Hidden markups and unclear pricing make it hard for customers
@@ -172,6 +182,7 @@
                 </p>
               </div>
               <div class="feature-item">
+                <i class="fa-solid fa-leaf fa-2x problem-icon"></i>
                 <h3>Sustainability Concerns</h3>
                 <p>
                   People want to support local artisans and sustainable
@@ -199,6 +210,7 @@
           <h2 class="features_for">For Buyers</h2>
           <div class="features">
             <div class="feature-item">
+              <i class="fa-solid fa-search fa-2x feature-icon"></i>
               <h3>Browse Easily</h3>
               <p>
                 Explore locally made products from sellers across Goa in one
@@ -206,6 +218,7 @@
               </p>
             </div>
             <div class="feature-item">
+              <i class="fa-solid fa-clock fa-2x feature-icon"></i>
               <h3>Save Time</h3>
               <p>
                 Skip the travel—check availability and compare options from
@@ -213,6 +226,7 @@
               </p>
             </div>
             <div class="feature-item">
+              <i class="fa-solid fa-list-check fa-2x feature-icon"></i>
               <h3>Choose What You Want</h3>
               <p>
                 Find the products and quantities you prefer instead of settling
@@ -224,17 +238,21 @@
           <h2 class="features_for">For Sellers</h2>
           <div class="features">
             <div class="feature-item">
+              <i class="fa-solid fa-bullhorn fa-2x feature-icon"></i>
               <h3>Improve Your Reach</h3>
               <p>Get people from all over Goa to discover your products.</p>
             </div>
             <div class="feature-item">
+              <i class="fa-solid fa-badge-dollar fa-2x feature-icon"></i>
               <h3>Free Advertisement</h3>
               <p>Just post your products and let others know what you have.</p>
             </div>
             <div class="feature-item">
+              <i class="fa-solid fa-arrow-trend-up fa-2x feature-icon"></i>
               <h3>Improve your sales</h3>
               <p>You could significantly improve your sales</p>
             </div>
+
           </div>
         </div>
       </section>
@@ -278,6 +296,18 @@
           </div>
         </div>
       </section>
+      <!-- Footer -->
+      <footer class="footer">
+        <div class="container footer-container">
+          <div class="footer-brand">Amcho Pasro</div>
+          <div class="footer-links">
+            <a href="mailto:info@amchopasro.com"><i class="fa-solid fa-envelope"></i></a>
+            <a href="#"><i class="fa-brands fa-instagram"></i></a>
+            <a href="#"><i class="fa-brands fa-facebook"></i></a>
+          </div>
+          <div class="footer-copy">&copy; {{ current_year }} Amcho Pasro. All rights reserved.</div>
+        </div>
+      </footer>
     </main>
 
     <script src="{{ url_for('static', filename='main.js') }}"></script>

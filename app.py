@@ -51,6 +51,11 @@ db = SQLAlchemy(app)
 login_manager = LoginManager(app)
 login_manager.login_view = "login"
 
+@app.context_processor
+def inject_globals():
+    """Inject global template variables like current year."""
+    return {"current_year": datetime.utcnow().year}
+
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), nullable=False)
