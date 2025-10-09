@@ -145,269 +145,416 @@
     <!-- Overlay for mobile sidebar -->
     <div class="sidebar-overlay" id="sidebar-overlay"></div>
 
-    <!-- Store Header -->
-    <div class="store-header">
-      <div class="store-image-profile">
-        <img
-          src="{{ url_for('static', filename=( 'uploads/' ~ store_owner.store_image ) if store_owner.store_image else 'images/default_store_img.png') }}"
-          alt="Store Image"
-          style="
-            max-width: 120px;
-            max-height: 120px;
-            border-radius: 50%;
-            object-fit: cover;
-          "
-        />
-      </div>
-      <h1 class="store-name">{{ store_owner.store_name }}</h1>
-      <div class="store-location">
-        {{ store_owner.store_location }}, {{ store_owner.store_city }}
-      </div>
-        {% if current_user.is_authenticated and current_user.id == store_owner.id %}
-          <div style="margin-top: 10px;">
-            <button id="openEditModal" class="btn-edit-store" style="padding:0.5rem 1.2rem;background:#2563eb;color:#fff;border:none;border-radius:6px;cursor:pointer;">Edit Store Details</button>
+    {% set product_count = products|length %}
+    {% set aggregates = namespace(quantity=0, value=0) %}
+    {% for product in products %}
+      {% set aggregates.quantity = aggregates.quantity + (product.quantity or 0) %}
+      {% set aggregates.value = aggregates.value + (product.price or 0) %}
+    {% endfor %}
+    {% set total_quantity = aggregates.quantity %}
+    {% set total_value = aggregates.value %}
+    {% set avg_price = (total_value / product_count) if product_count else 0 %}
+    {% set rating = store_owner.get_store_rating() %}
+    {% set review_count = store_owner.get_review_count() %}
+    {% set latest_product = products[0] if products else None %}
+    {% set first_product = (products|last) if products else None %}
+
+    <!-- Store Hero -->
+    <header class="store-hero">
+      <div class="store-hero__backdrop"></div>
+      <div class="store-hero__glow"></div>
+      <div class="store-hero__content">
+        <div class="store-hero__profile">
+          <div class="hero-avatar">
+            <img
+              src="{{ url_for('static', filename=( 'uploads/' ~ store_owner.store_image ) if store_owner.store_image else 'images/default_store_img.png') }}"
+              alt="{{ store_owner.store_name }} profile"
+            />
+            <span class="hero-status">
+              <span class="status-dot"></span>
+              Seller Spotlight
+            </span>
           </div>
-          <!-- Floating Modal Edit Form -->
-          <div id="editModalOverlay" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.45);z-index:1000;align-items:center;justify-content:center;">
-            <div class="modal-form" style="background:#fff;padding:2.5rem 2rem 2rem 2rem;border-radius:18px;box-shadow:0 8px 32px rgba(0,0,0,0.18);max-width:420px;width:100%;position:relative;max-height:90vh;overflow-y:auto;">
-              <button type="button" id="closeEditModal" style="position:absolute;top:18px;right:18px;background:none;border:none;font-size:1.8rem;line-height:1;color:#475569;cursor:pointer;">&times;</button>
-              <h2 style="margin-bottom:1.2rem;text-align:center;">Edit Store Details</h2>
-              <form method="POST" action="{{ url_for('edit_store') }}" enctype="multipart/form-data">
-                <div class="form-group" style="margin-bottom:1rem;">
-                  <label for="store_name">Store Name:</label>
-                  <input type="text" id="store_name" name="store_name" value="{{ store_owner.store_name }}" required style="width:100%;padding:0.5rem;margin-top:0.3rem;" />
-                </div>
-                <div class="form-group" style="margin-bottom:1rem;">
-                  <label for="store_location">Location:</label>
-                  <input type="text" id="store_location" name="store_location" value="{{ store_owner.store_location }}" required style="width:100%;padding:0.5rem;margin-top:0.3rem;" />
-                </div>
-                <div class="form-group" style="margin-bottom:1rem;">
-                  <label for="store_city">City:</label>
-                  <input type="text" id="store_city" name="store_city" value="{{ store_owner.store_city }}" required style="width:100%;padding:0.5rem;margin-top:0.3rem;" />
-                </div>
-                <!-- Removed visible lat/lng/address fields; only hidden fields below are submitted -->
-                <div class="form-group" style="margin-bottom:1.2rem;">
-                  <label for="store_image">Store Image:</label><br>
-                  {% if store_owner.store_image %}
-                    <img src="{{ url_for('static', filename='uploads/' ~ store_owner.store_image) }}" alt="Current Store Image" style="max-width:80px;max-height:80px;border-radius:50%;object-fit:cover;margin-bottom:0.5rem;" />
+          <div class="hero-details">
+            <div class="hero-heading">
+              <h1>{{ store_owner.store_name }}</h1>
+              <div class="hero-location">
+                <span class="icon">📍</span>
+                {{ store_owner.store_location or 'Location coming soon' }},
+                {{ store_owner.store_city or 'City' }}
+              </div>
+            </div>
+            <div class="hero-meta">
+              <div class="hero-rating {{ 'is-empty' if not rating }}">
+                <span class="rating-value">
+                  {% if rating %}
+                    {{ rating }}
+                  {% else %}
+                    —
                   {% endif %}
-                  <input type="file" id="store_image" name="store_image" accept="image/*" style="margin-top:0.3rem;" />
+                </span>
+                <div class="rating-caption">
+                  <span>Average rating</span>
+                  <small>
+                    {% if review_count %}
+                      Based on {{ review_count }} review{{ 's' if review_count != 1 }}
+                    {% else %}
+                      No reviews yet
+                    {% endif %}
+                  </small>
                 </div>
-                <!-- Location Picker -->
-                <div class="form-section" style="margin-bottom:1.2rem;">
-                  <h3 class="section-title">Shop Location Picker</h3>
-                  <div class="form-group">
-                    <label for="addressSearch">Search Shop Address</label>
-                    <input type="text" id="editAddressSearch" name="addressSearch" placeholder="Search address or place (powered by OpenStreetMap)" list="editAddressSuggestions" autocomplete="off" />
-                    <datalist id="editAddressSuggestions"></datalist>
-                  </div>
-                  <div class="form-actions-row">
-                    <button type="button" id="editDetectLocationBtn" class="secondary-button">Detect My Location</button>
-                  </div>
-                  <div id="edit-shop-map" class="map-container" aria-label="Shop location map" style="height:220px;margin-bottom:0.7rem;"></div>
-                  <p class="map-hint"><small>Tip: Click anywhere on the map to place/move the marker, or drag the marker to fine-tune the location.</small></p>
-                  <div class="map-readout">
-                    <div><strong>Latitude:</strong> <span id="edit-current-lat">{{ store_owner.store_latitude or '—' }}</span></div>
-                    <div><strong>Longitude:</strong> <span id="edit-current-lng">{{ store_owner.store_longitude or '—' }}</span></div>
-                    <div class="address-line"><strong>Address:</strong> <span id="edit-current-address">{{ store_owner.store_address or store_owner.store_location or '—' }}</span></div>
-                  </div>
-                  <!-- Hidden inputs submitted with the form -->
-                  <input type="hidden" name="latitude" id="edit-latitude" value="{{ store_owner.store_latitude }}" />
-                  <input type="hidden" name="longitude" id="edit-longitude" value="{{ store_owner.store_longitude }}" />
-                  <input type="hidden" name="address" id="edit-address" value="{{ store_owner.store_address }}" />
-                </div>
-                <button type="submit" class="btn-submit" style="width:100%;padding:0.7rem 0;font-size:1.1rem;background:#2563eb;color:#fff;border:none;border-radius:6px;cursor:pointer;">Save Changes</button>
-              </form>
+              </div>
+              <div class="hero-badges">
+                <span class="hero-badge">Fresh catch guarantee</span>
+                <span class="hero-badge">Community trusted</span>
+              </div>
             </div>
           </div>
-        {% endif %}
-      {% if store_owner.get_store_rating() %}
-      <div class="store-rating">
-        {{ store_owner.get_store_rating() }}/5
-        <span>({{ store_owner.get_review_count() }} reviews)</span>
+        </div>
+
+        <div class="hero-actions">
+          {% if current_user.is_authenticated and current_user.id == store_owner.id %}
+            <button id="openEditModal" class="action-primary">Edit store profile</button>
+            <a href="{{ url_for('post_product') }}" class="action-secondary">Add new product</a>
+          {% else %}
+            <a href="#products" class="action-secondary">Browse products</a>
+          {% endif %}
+          <button
+            type="button"
+            class="action-ghost"
+            data-share-url="{{ url_for('store_page', store_owner_id=store_owner.id) }}"
+          >
+            Share store
+          </button>
+        </div>
+
+        <div class="hero-stats">
+          <div class="stat-card">
+            <span class="stat-label">Products live</span>
+            <span class="stat-value">{{ product_count }}</span>
+            <span class="stat-hint">Updated {{ (latest_product.created_at.strftime('%b %d, %Y')) if latest_product else '—' }}</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Total inventory</span>
+            <span class="stat-value">{{ total_quantity or 0 }}</span>
+            <span class="stat-hint">Items ready to ship</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Avg. price</span>
+            <span class="stat-value">₹{{ '%.0f'|format(avg_price) if avg_price else '—' }}</span>
+            <span class="stat-hint">Across current catalog</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Customer love</span>
+            <span class="stat-value">{{ review_count }}</span>
+            <span class="stat-hint">Reviews collected</span>
+          </div>
+        </div>
       </div>
-      {% else %}
-      <div class="store-rating">No reviews yet</div>
+
+      {% if current_user.is_authenticated and current_user.id == store_owner.id %}
+        <div id="editModalOverlay" class="store-modal" aria-hidden="true">
+          <div class="store-modal__dialog" role="dialog" aria-modal="true">
+            <button type="button" id="closeEditModal" class="store-modal__close" aria-label="Close edit store modal">&times;</button>
+            <h2>Edit store details</h2>
+            <form method="POST" action="{{ url_for('edit_store') }}" enctype="multipart/form-data" class="store-modal__form">
+              <div class="form-grid">
+                <div class="form-field">
+                  <label for="store_name">Store name</label>
+                  <input type="text" id="store_name" name="store_name" value="{{ store_owner.store_name }}" required />
+                </div>
+                <div class="form-field">
+                  <label for="store_location">Neighborhood / address</label>
+                  <input type="text" id="store_location" name="store_location" value="{{ store_owner.store_location }}" required />
+                </div>
+                <div class="form-field">
+                  <label for="store_city">City</label>
+                  <input type="text" id="store_city" name="store_city" value="{{ store_owner.store_city }}" required />
+                </div>
+              </div>
+
+              <div class="form-field">
+                <label for="store_image">Store avatar</label>
+                <div class="image-upload">
+                  {% if store_owner.store_image %}
+                    <img src="{{ url_for('static', filename='uploads/' ~ store_owner.store_image) }}" alt="Current store image" />
+                  {% endif %}
+                  <label class="upload-trigger" for="store_image">Upload new image</label>
+                  <input type="file" id="store_image" name="store_image" accept="image/*" />
+                  <p class="upload-hint">Best results with a square JPG or PNG under 5MB.</p>
+                </div>
+              </div>
+
+              <div class="location-picker">
+                <div class="location-header">
+                  <h3>Pin your storefront</h3>
+                  <p>Search or drag the marker to keep your map listing accurate.</p>
+                </div>
+                <div class="form-field">
+                  <label for="editAddressSearch">Find address</label>
+                  <input
+                    type="text"
+                    id="editAddressSearch"
+                    name="addressSearch"
+                    placeholder="Search address or place (powered by OpenStreetMap)"
+                    list="editAddressSuggestions"
+                    autocomplete="off"
+                  />
+                  <datalist id="editAddressSuggestions"></datalist>
+                </div>
+                <div class="location-controls">
+                  <button type="button" id="editDetectLocationBtn" class="chip-button">Detect my location</button>
+                </div>
+                <div id="edit-shop-map" class="map-container" aria-label="Shop location map"></div>
+                <small class="map-hint">Tip: Click anywhere on the map to place or drag the marker.</small>
+                <div class="map-readout">
+                  <div><strong>Latitude:</strong> <span id="edit-current-lat">{{ store_owner.store_latitude or '—' }}</span></div>
+                  <div><strong>Longitude:</strong> <span id="edit-current-lng">{{ store_owner.store_longitude or '—' }}</span></div>
+                  <div class="address-line"><strong>Address:</strong> <span id="edit-current-address">{{ store_owner.store_address or store_owner.store_location or '—' }}</span></div>
+                </div>
+                <input type="hidden" name="latitude" id="edit-latitude" value="{{ store_owner.store_latitude }}" />
+                <input type="hidden" name="longitude" id="edit-longitude" value="{{ store_owner.store_longitude }}" />
+                <input type="hidden" name="address" id="edit-address" value="{{ store_owner.store_address }}" />
+              </div>
+
+              <button type="submit" class="modal-submit">Save changes</button>
+            </form>
+          </div>
+        </div>
       {% endif %}
-    </div>
+    </header>
 
     <!-- Main Content -->
-    <main class="main-content">
-      <div class="store-content">
-        <a href="{{ url_for('products') }}" class="back-button">
-          Back to Products
-        </a>
-
-        <!-- Flash Messages -->
-        {% with messages = get_flashed_messages(with_categories=true) %} {% if
-        messages %}
-        <div class="flash-messages">
-          {% for category, message in messages %}
-          <div class="flash-message flash-{{ category }}">{{ message }}</div>
-          {% endfor %}
-        </div>
-        {% endif %} {% endwith %}
-
-        <!-- Store Location -->
-        {% if store_owner.store_latitude and store_owner.store_longitude %}
-        <h2 class="section-title">Store Location</h2>
-        <div class="form-section" style="margin-bottom: 20px">
-          <div
-            id="store-map"
-            class="map-container"
-            aria-label="Map with store location"
-            data-lat="{{ store_owner.store_latitude }}"
-            data-lng="{{ store_owner.store_longitude }}"
-            data-address="{{ store_owner.store_address or store_owner.store_location or '' }}"
-            data-city="{{ store_owner.store_city or '' }}"
-            data-name="{{ store_owner.store_name or 'Store' }}"
-          ></div>
-          <div class="map-readout">
-            <div><strong>Latitude:</strong> <span id="store-lat">—</span></div>
-            <div><strong>Longitude:</strong> <span id="store-lng">—</span></div>
-            <div class="address-line">
-              <strong>Address:</strong> <span id="store-address">—</span>
-            </div>
+    <main class="dashboard">
+      <div class="dashboard__inner">
+        <div class="dashboard__intro">
+          <a href="{{ url_for('products') }}" class="back-link">← Back to products</a>
+          <div class="breadcrumbs">
+            <span>Seller hub</span>
+            <span aria-hidden="true">›</span>
+            <span>{{ store_owner.store_name }}</span>
           </div>
-          <div
-            id="store-map-note"
-            style="color: #475569; font-size: 0.9rem"
-          ></div>
-          <div style="margin-top: 6px">
-            <a
-              id="open-osm-link"
-              href="#"
-              target="_blank"
-              rel="noopener"
-              style="font-size: 0.95rem"
-              >Open in OpenStreetMap</a
-            >
-          </div>
-        </div>
-        {% endif %}
 
-        <!-- Store Products -->
-        <h2 class="section-title">Products</h2>
-        {% if products %}
-        <div class="products-grid">
-          {% for product in products %}
-          <div
-            class="product-card"
-            onclick="location.href='{{ url_for('product_detail', product_id=product.id) }}'"
-            style="cursor: pointer"
-          >
-            <div class="product-image">
-                {% if product.image_filename %}
-                <img
-                  src="{{ url_for('static', filename='uploads/' + product.image_filename) }}"
-                  alt="{{ product.title }}"
-                />
-              {% else %}
-              <div class="product-placeholder">
-                <span>No Image</span>
-              </div>
-              {% endif %}
-            </div>
-            <div class="product-content">
-              <h3 class="product-title">{{ product.title }}</h3>
-              <div class="product-price">
-                ₹{{ "%.2f"|format(product.price) }}
-              </div>
-              {% if product.quantity > 1 %}
-              <div class="product-quantity">
-                Quantity: {{ product.quantity }}
-              </div>
-              {% endif %}
-              <div class="product-city">{{ product.city }}</div>
-              {% if product.description %}
-              <div class="product-description">
-                {{ product.description[:100] }}{% if product.description|length
-                > 100 %}...{% endif %}
-              </div>
-              {% endif %}
-              <div class="product-timestamp">
-                Listed {{ product.created_at.strftime('%B %d, %Y') }}
+          {% if latest_product %}
+            <div class="spotlight">
+              <div class="spotlight__label">Fresh on the shelf</div>
+              <div class="spotlight__content">
+                <div>
+                  <h2>{{ latest_product.title }}</h2>
+                  <p>{{ latest_product.description[:120] if latest_product.description else 'Listed recently and ready for customers.' }}</p>
+                </div>
+                <div class="spotlight__meta">
+                  <span class="spotlight__price">₹{{ '%.2f'|format(latest_product.price) }}</span>
+                  <span class="spotlight__time">Added {{ latest_product.created_at.strftime('%b %d, %Y') }}</span>
+                  <a href="{{ url_for('product_detail', product_id=latest_product.id) }}" class="spotlight__link">View listing →</a>
+                </div>
               </div>
             </div>
-          </div>
-          {% endfor %}
-        </div>
-        {% else %}
-        <div class="no-products">
-          <p>This store hasn't posted any products yet.</p>
-        </div>
-        {% endif %}
-
-        <!-- Review Section -->
-        {% if current_user.id != store_owner.id %}
-        <h2 class="section-title">Leave a Review</h2>
-        <div class="review-form">
-          {% if existing_review %}
-          <div class="existing-review-notice">
-            <strong>You have already reviewed this store.</strong> You can
-            update your review below.
-          </div>
           {% endif %}
+        </div>
 
-          <form
-            method="POST"
-            action="{{ url_for('add_store_review', store_owner_id=store_owner.id) }}"
-          >
-            <div class="form-group">
-              <label>Rating:</label>
-              <div class="rating-input">
-                {% for i in range(5, 0, -1) %} <input type="radio" id="star{{ i
-                }}" name="rating" value="{{ i }}" {% if existing_review and
-                existing_review.rating == i %}checked{% endif %}>
-                <label for="star{{ i }}">★</label>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <div class="flash-stack">
+              {% for category, message in messages %}
+                <div class="flash-card flash-{{ category }}">{{ message }}</div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+
+        <div class="dashboard__grid">
+          <section id="products" class="panel panel--wide">
+            <header class="panel__header">
+              <div>
+                <h2>Product catalog</h2>
+                <p>Keep your best sellers front and center. Click any card to jump into the detailed listing.</p>
+              </div>
+              {% if current_user.is_authenticated and current_user.id == store_owner.id %}
+                <a href="{{ url_for('post_product') }}" class="header-link">Post another product</a>
+              {% endif %}
+            </header>
+
+            {% if products %}
+              <div class="product-grid">
+                {% for product in products %}
+                  <article
+                    class="product-card"
+                    role="button"
+                    tabindex="0"
+                    onclick="location.href='{{ url_for('product_detail', product_id=product.id) }}'"
+                    onkeypress="if(event.key==='Enter'){ location.href='{{ url_for('product_detail', product_id=product.id) }}'; }"
+                  >
+                    <div class="product-card__image">
+                      {% if product.image_filename %}
+                        <img src="{{ url_for('static', filename='uploads/' + product.image_filename) }}" alt="{{ product.title }}" loading="lazy" />
+                      {% else %}
+                        <div class="product-card__placeholder" aria-hidden="true">No image</div>
+                      {% endif %}
+                    </div>
+                    <div class="product-card__body">
+                      <div class="product-card__top">
+                        <h3>{{ product.title }}</h3>
+                        <span class="product-card__price">₹{{ '%.2f'|format(product.price) }}</span>
+                      </div>
+                      <p class="product-card__excerpt">
+                        {% if product.description %}
+                          {{ product.description[:90] }}{% if product.description|length > 90 %}…{% endif %}
+                        {% else %}
+                          A fresh addition from {{ store_owner.store_name }}.
+                        {% endif %}
+                      </p>
+                      <div class="product-card__meta">
+                        <span class="product-card__meta-item">
+                          <span class="icon">📦</span>
+                          {{ product.quantity }} in stock
+                        </span>
+                        <span class="product-card__meta-item">
+                          <span class="icon">🗓</span>
+                          {{ product.created_at.strftime('%b %d, %Y') }}
+                        </span>
+                        <span class="product-card__meta-item">
+                          <span class="icon">📍</span>
+                          {{ store_owner.store_city or '—' }}
+                        </span>
+                      </div>
+                    </div>
+                  </article>
                 {% endfor %}
               </div>
-            </div>
-
-            <div class="form-group">
-              <label for="review_text">Review (optional):</label>
-              <textarea
-                id="review_text"
-                name="review_text"
-                placeholder="Share your experience with this store..."
-              >
-{% if existing_review %}{{ existing_review.review_text }}{% endif %}</textarea
-              >
-            </div>
-
-            <button type="submit" class="btn-submit">
-              {% if existing_review %}Update Review{% else %}Submit Review{%
-              endif %}
-            </button>
-          </form>
-        </div>
-        {% endif %}
-
-        <!-- Reviews Display -->
-        <h2 class="section-title">Customer Reviews</h2>
-        {% if reviews %} {% for review in reviews %}
-        <div class="review-item">
-          <div class="review-header">
-            <div>
-              <div class="reviewer-name">{{ review.reviewer.username }}</div>
-              <div class="review-date">
-                {{ review.created_at.strftime('%B %d, %Y') }}
+            {% else %}
+              <div class="empty-state">
+                <h3>No products yet</h3>
+                <p>This space is waiting for your first catch of the day. Add a product to start selling.</p>
+                {% if current_user.is_authenticated and current_user.id == store_owner.id %}
+                  <a href="{{ url_for('post_product') }}" class="action-primary">Create your first listing</a>
+                {% endif %}
               </div>
+            {% endif %}
+          </section>
+
+          <aside class="panel panel--side">
+            <div class="panel__block">
+              <h3>Store at a glance</h3>
+              <ul class="glance-list">
+                <li>
+                  <span class="label">First listing</span>
+                  <span class="value">{{ first_product.created_at.strftime('%b %Y') if first_product else 'Add your first product' }}</span>
+                </li>
+                <li>
+                  <span class="label">Primary location</span>
+                  <span class="value">{{ store_owner.store_location or 'Update in edit panel' }}</span>
+                </li>
+                <li>
+                  <span class="label">City</span>
+                  <span class="value">{{ store_owner.store_city or '—' }}</span>
+                </li>
+                <li>
+                  <span class="label">Inventory depth</span>
+                  <span class="value">{{ total_quantity or 0 }} pcs across {{ product_count }} product{{ '' if product_count == 1 else 's' }}</span>
+                </li>
+              </ul>
             </div>
-            <div class="review-rating">
-              {% for i in range(review.rating) %}★{% endfor %} {% for i in
-              range(5 - review.rating) %}☆{% endfor %}
+
+            {% if store_owner.store_latitude and store_owner.store_longitude %}
+              <div class="panel__block map-panel">
+                <div class="panel__block-header">
+                  <h3>Store map</h3>
+                  <a id="open-osm-link" href="#" target="_blank" rel="noopener" class="tiny-link">Open in OpenStreetMap</a>
+                </div>
+                <div
+                  id="store-map"
+                  class="map-container"
+                  aria-label="Map with store location"
+                  data-lat="{{ store_owner.store_latitude }}"
+                  data-lng="{{ store_owner.store_longitude }}"
+                  data-address="{{ store_owner.store_address or store_owner.store_location or '' }}"
+                  data-city="{{ store_owner.store_city or '' }}"
+                  data-name="{{ store_owner.store_name or 'Store' }}"
+                ></div>
+                <div class="map-readout">
+                  <div><strong>Latitude:</strong> <span id="store-lat">—</span></div>
+                  <div><strong>Longitude:</strong> <span id="store-lng">—</span></div>
+                  <div class="address-line"><strong>Address:</strong> <span id="store-address">—</span></div>
+                </div>
+                <p id="store-map-note" class="map-note"></p>
+              </div>
+            {% endif %}
+
+            <div class="panel__block tips">
+              <h3>Pro tips</h3>
+              <ul>
+                <li>Keep photos bright and clear to build trust.</li>
+                <li>Use the map pin to make pickup orders easier.</li>
+                <li>Encourage customers to drop a review after each sale.</li>
+              </ul>
             </div>
-          </div>
-          {% if review.review_text %}
-          <div class="review-text">{{ review.review_text }}</div>
+          </aside>
+        </div>
+
+        <section class="panel panel--wide reviews">
+          <header class="panel__header">
+            <div>
+              <h2>Customer reviews</h2>
+              <p>Real voices from the community. Great service keeps them coming back.</p>
+            </div>
+          </header>
+
+          {% if current_user.id != store_owner.id %}
+            <div class="review-composer">
+              <h3>{{ existing_review and 'Update your thoughts' or 'Share your experience' }}</h3>
+              {% if existing_review %}
+                <div class="notice">
+                  You've already reviewed this store. Feel free to refresh your rating or add new feedback.
+                </div>
+              {% endif %}
+              <form method="POST" action="{{ url_for('add_store_review', store_owner_id=store_owner.id) }}">
+                <div class="form-field">
+                  <label>Rating</label>
+                  <div class="rating-input">
+                    {% for i in range(5, 0, -1) %}
+                      <input type="radio" id="star{{ i }}" name="rating" value="{{ i }}" {% if existing_review and existing_review.rating == i %}checked{% endif %}>
+                      <label for="star{{ i }}">★</label>
+                    {% endfor %}
+                  </div>
+                </div>
+                <div class="form-field">
+                  <label for="review_text">Review (optional)</label>
+                  <textarea id="review_text" name="review_text" placeholder="Tell shoppers what stood out for you.">{% if existing_review %}{{ existing_review.review_text }}{% endif %}</textarea>
+                </div>
+                <button type="submit" class="action-primary">
+                  {{ existing_review and 'Update review' or 'Submit review' }}
+                </button>
+              </form>
+            </div>
           {% endif %}
-        </div>
-        {% endfor %} {% else %}
-        <div class="no-reviews">
-          <p>No reviews yet. Be the first to review this store!</p>
-        </div>
-        {% endif %}
+
+          {% if reviews %}
+            <div class="review-list">
+              {% for review in reviews %}
+                <article class="review-card">
+                  <header>
+                    <div>
+                      <h3>{{ review.reviewer.username }}</h3>
+                      <time datetime="{{ review.created_at.isoformat() }}">{{ review.created_at.strftime('%b %d, %Y') }}</time>
+                    </div>
+                    <div class="review-stars">
+                      {% for i in range(review.rating) %}★{% endfor %}{% for i in range(5 - review.rating) %}☆{% endfor %}
+                    </div>
+                  </header>
+                  {% if review.review_text %}
+                    <p>{{ review.review_text }}</p>
+                  {% endif %}
+                </article>
+              {% endfor %}
+            </div>
+          {% else %}
+            <div class="empty-state">
+              <h3>No reviews yet</h3>
+              <p>Be the first to share feedback and help this seller shine.</p>
+            </div>
+          {% endif %}
+        </section>
       </div>
     </main>
     <!-- Leaflet JS for map -->
@@ -432,41 +579,56 @@
         const openEditBtn = document.getElementById('openEditModal');
         const editModal = document.getElementById('editModalOverlay');
         const closeEditBtn = document.getElementById('closeEditModal');
-        if (openEditBtn && editModal && closeEditBtn) {
-          openEditBtn.onclick = function() {
-            editModal.style.display = 'flex';
-            document.body.style.overflow = 'hidden'; // Prevent background scroll
-            setTimeout(function() {
-              if (window.initLocationPicker) {
-                window.initLocationPicker({
-                  mapId: 'edit-shop-map',
-                  latInput: 'edit-latitude',
-                  lngInput: 'edit-longitude',
-                  addressInput: 'edit-address',
-                  addressSearch: 'editAddressSearch',
-                  addressSuggestions: 'editAddressSuggestions',
-                  detectBtn: 'editDetectLocationBtn',
-                  latReadout: 'edit-current-lat',
-                  lngReadout: 'edit-current-lng',
-                  addressReadout: 'edit-current-address',
-                  initialLat: parseFloat(document.getElementById('edit-latitude')?.value) || 15.2993,
-                  initialLng: parseFloat(document.getElementById('edit-longitude')?.value) || 74.1240,
-                  initialAddress: document.getElementById('edit-address')?.value || '',
-                  storeLocationInput: 'store_location',
-                });
-              }
-            }, 300);
-          };
-          function closeModal() {
-            editModal.style.display = 'none';
-            document.body.style.overflow = '';
-          }
-          closeEditBtn.onclick = closeModal;
-          editModal.onclick = function(e) {
+        const toggleBodyScroll = (isOpen) => {
+          document.body.style.overflow = isOpen ? 'hidden' : '';
+        };
+
+        const openModal = () => {
+          if (!editModal) return;
+          editModal.setAttribute('aria-hidden', 'false');
+          editModal.style.display = 'flex';
+          toggleBodyScroll(true);
+          setTimeout(function() {
+            if (window.initLocationPicker) {
+              window.initLocationPicker({
+                mapId: 'edit-shop-map',
+                latInput: 'edit-latitude',
+                lngInput: 'edit-longitude',
+                addressInput: 'edit-address',
+                addressSearch: 'editAddressSearch',
+                addressSuggestions: 'editAddressSuggestions',
+                detectBtn: 'editDetectLocationBtn',
+                latReadout: 'edit-current-lat',
+                lngReadout: 'edit-current-lng',
+                addressReadout: 'edit-current-address',
+                initialLat: parseFloat(document.getElementById('edit-latitude')?.value) || 15.2993,
+                initialLng: parseFloat(document.getElementById('edit-longitude')?.value) || 74.1240,
+                initialAddress: document.getElementById('edit-address')?.value || '',
+                storeLocationInput: 'store_location',
+              });
+            }
+          }, 200);
+        };
+
+        const closeModal = () => {
+          if (!editModal) return;
+          editModal.setAttribute('aria-hidden', 'true');
+          editModal.style.display = 'none';
+          toggleBodyScroll(false);
+        };
+
+        if (openEditBtn) {
+          openEditBtn.addEventListener('click', openModal);
+        }
+        if (closeEditBtn) {
+          closeEditBtn.addEventListener('click', closeModal);
+        }
+        if (editModal) {
+          editModal.addEventListener('click', function(e) {
             if (e.target === editModal) {
               closeModal();
             }
-          };
+          });
         }
       })();
       </script>
@@ -523,6 +685,27 @@
       if (checkedInput) {
         highlightStars(parseInt(checkedInput.value));
       }
+
+      // Share button copy logic
+      const shareButtons = document.querySelectorAll('[data-share-url]');
+      shareButtons.forEach(function(button) {
+        button.addEventListener('click', async function() {
+          const relativeUrl = button.getAttribute('data-share-url');
+          const fullUrl = window.location.origin + relativeUrl;
+          try {
+            await navigator.clipboard.writeText(fullUrl);
+            const originalText = button.textContent;
+            button.textContent = 'Link copied!';
+            button.classList.add('action-secondary');
+            setTimeout(() => {
+              button.textContent = originalText;
+              button.classList.remove('action-secondary');
+            }, 2000);
+          } catch (err) {
+            window.open(fullUrl, '_blank');
+          }
+        });
+      });
     </script>
   </body>
 </html>

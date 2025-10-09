@@ -152,24 +152,30 @@
         {% endif %} {% endwith %}
 
         <div class="product-detail">
-          <div class="product-image-detail">
-            {% if product.image_filename %}
-            <img
-              src="{{ url_for('static', filename='uploads/product_images/' + (product.image_filename.split('/')[-1] if product.image_filename else '')) }}"
-              alt="{{ product.title }}"
-            />
-            {% else %}
-            <div class="product-placeholder-detail">
-              <span>No Image Available</span>
+          <div class="product-media-stack">
+            <div class="product-image-detail">
+              {% if product.image_filename %}
+              <img
+                src="{{ url_for('static', filename='uploads/product_images/' + (product.image_filename.split('/')[-1] if product.image_filename else '')) }}"
+                alt="{{ product.title }}"
+              />
+              {% else %}
+              <div class="product-placeholder-detail">
+                <span>No Image Available</span>
+              </div>
+              {% endif %}
             </div>
-            {% endif %}
           </div>
 
           <div class="product-info">
             <h1 class="product-title-detail">{{ product.title }}</h1>
             {% if product.category %}
-            <div style="margin:.25rem 0 1rem 0;">
-              <a href="{{ url_for('category_detail', slug=product.category.slug) }}" style="background:var(--light-gray,#eee); padding:.35rem .65rem; border-radius:16px; font-size:.7rem; text-decoration:none; text-transform:uppercase; letter-spacing:.05em;">{{ product.category.name }}</a>
+            <div>
+              <a
+                href="{{ url_for('category_detail', slug=product.category.slug) }}"
+                class="badge-category"
+                >{{ product.category.name }}</a
+              >
             </div>
             {% endif %}
             <div class="product-price-detail">
@@ -224,12 +230,6 @@
                   <img
                     src="{{ url_for('static', filename=( 'uploads/' ~ product.user.store_image ) if product.user.store_image else 'images/default_store_img.png') }}"
                     alt="Store Image"
-                    style="
-                      max-width: 48px;
-                      max-height: 48px;
-                      border-radius: 50%;
-                      object-fit: cover;
-                    "
                   />
                 </span>
                 <strong>{{ product.user.store_name }}</strong>
