@@ -12,6 +12,10 @@
       rel="stylesheet"
       href="{{ url_for('static', filename='products.css') }}"
     />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+    />
   </head>
   <body>
     <!-- Navbar -->
@@ -149,59 +153,89 @@
     <div class="sidebar-overlay" id="sidebar-overlay"></div>
 
     <!-- Main Content -->
-    <main class="main-content">
-      <section class="page-section">
-        <h1>Browse Listings</h1>
+    <main class="page-wrapper">
+      <section class="page-hero products-hero">
+        <div class="page-hero__inner products-hero__inner">
+          <div class="products-hero__copy">
+            <span class="page-hero__eyebrow">Marketplace</span>
+            <h1 class="page-hero__title">Browse Listings</h1>
+            <div class="products-hero__filters">
+              <form method="GET" action="{{ url_for('products') }}" class="products-hero__search">
+                <label class="sr-only" for="productSearch">Search marketplace</label>
+                <div class="filter-panel__input-wrap">
+                  <i class="fa-solid fa-magnifying-glass"></i>
+                  <input
+                    id="productSearch"
+                    type="text"
+                    name="q"
+                    placeholder="Search by title or description"
+                    value="{{ request.args.get('q', '') }}"
+                  />
+                </div>
+                <button type="submit" class="btn-secondary products-hero__search-btn">
+                  <i class="fa-solid fa-search"></i>
+                  Apply search
+                </button>
+              </form>
 
-        {% if categories %}
-        <div class="category-filter" style="margin:1rem 0; display:flex; flex-wrap:wrap; gap:.5rem; align-items:center;">
-          <strong style="margin-right:.5rem;">Categories:</strong>
-          <a href="{{ url_for('products') }}" class="badge {{ 'active' if not current_category else '' }}" style="padding:.4rem .75rem; border-radius:20px; background: var(--light-gray,#eee); text-decoration:none; font-size:.85rem;">All</a>
-          {% for cat in categories %}
-            <a href="{{ url_for('products') }}?category={{ cat.slug }}" class="badge {{ 'active' if current_category and (current_category.id == cat.id) else '' }}" style="padding:.4rem .75rem; border-radius:20px; background: {% if current_category and current_category.id == cat.id %}var(--primary,#0077cc){% else %}var(--light-gray,#eee){% endif %}; color:{% if current_category and current_category.id == cat.id %}#fff{% else %}inherit{% endif %}; text-decoration:none; font-size:.85rem;">{{ cat.name }}</a>
-          {% endfor %}
-          <a href="{{ url_for('categories_page') }}" style="margin-left:auto; font-size:.8rem;">View all &raquo;</a>
+              {% if categories %}
+              <div class="products-hero__chips input-chip-group" role="group" aria-label="Filter by category">
+                <a
+                  href="{{ url_for('products') }}"
+                  class="input-chip {{ 'is-active' if not current_category else '' }}"
+                >
+                  All listings
+                </a>
+                {% for cat in categories %}
+                <a
+                  href="{{ url_for('products') }}?category={{ cat.slug }}"
+                  class="input-chip {{ 'is-active' if current_category and (current_category.id == cat.id) else '' }}"
+                >
+                  {{ cat.name }}
+                </a>
+                {% endfor %}
+              </div>
+              {% endif %}
+
+              <a href="{{ url_for('categories_page') }}" class="products-hero__categories-link">
+                View all categories <i class="fa-solid fa-arrow-up-right-from-square"></i>
+              </a>
+            </div>
+            <div class="page-hero__actions">
+              <a href="{{ url_for('store_finder') }}" class="btn-ghost">
+                <i class="fa-solid fa-location-dot"></i>
+                Explore stores nearby
+              </a>
+              {% if current_user.is_authenticated and current_user.is_seller() %}
+              <a href="{{ url_for('post_product') }}" class="btn-secondary">
+                <i class="fa-solid fa-plus"></i>
+                Share a new product
+              </a>
+              {% endif %}
+            </div>
+          </div>
+
         </div>
-        {% endif %}
+      </section>
 
-        <!-- Search Form -->
-        <form
-          method="GET"
-          action="{{ url_for('products') }}"
-          class="product-search-form"
-          style="
-            margin-bottom: 2rem;
-            display: flex;
-            gap: 1rem;
-            align-items: center;
-          "
-        >
-          <input
-            type="text"
-            name="q"
-            placeholder="Search by title or description..."
-            value="{{ request.args.get('q', '') }}"
-            style="
-              flex: 1;
-              padding: 0.75rem;
-              border-radius: 5px;
-              border: 1px solid var(--border-gray);
-              font-size: 1rem;
-            "
-          />
-          <button type="submit" class="cta-button primary">Search</button>
-        </form>
+      <section class="section-block">
+        <div class="page-shell products-shell">
 
-        <!-- Flash Messages -->
-        {% with messages = get_flashed_messages(with_categories=true) %} {% if
-        messages %}
-        <div class="flash-messages">
-          {% for category, message in messages %}
-          <div class="flash-message flash-{{ category }}">{{ message }}</div>
-          {% endfor %}
-        </div>
-        {% endif %} {% endwith %} {% if products %}
-        <div class="products-grid">
+          {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+              <div class="info-banner">
+                <i class="fa-solid fa-circle-info"></i>
+                <div>
+                  {% for category, message in messages %}
+                  <p class="banner-{{ category }}">{{ message }}</p>
+                  {% endfor %}
+                </div>
+              </div>
+            {% endif %}
+          {% endwith %}
+
+          {% if products %}
+          <div class="products-grid">
           {% for product in products %}
           <div
             class="product-card"
@@ -226,7 +260,7 @@
                 <div class="product-category" style="font-size:.7rem; text-transform:uppercase; letter-spacing:.05em; background:var(--light-gray,#f0f0f0); display:inline-block; padding:.25rem .5rem; border-radius:4px; margin-bottom:.4rem;">{{ product.category.name }}</div>
               {% endif %}
               <div class="product-price">
-                ₹{{ "%.2f"|format(product.price) }}
+                <span class="product-price__value">₹{{ "%.2f"|format(product.price) }}</span>
               </div>
               {% if product.quantity > 1 %}
               <div class="product-quantity">
@@ -243,34 +277,37 @@
                   <img
                     src="{{ url_for('static', filename=( 'uploads/' ~ product.user.store_image ) if product.user.store_image else 'images/default_store_img.png') }}"
                     alt="Store Image"
-                    style="
-                      max-width: 48px;
-                      max-height: 48px;
-                      border-radius: 50%;
-                      object-fit: cover;
-                    "
                   />
                 </div>
-                <strong>{{ product.user.store_name }}</strong><br />
-                {{ product.user.store_location }}, ( {{ product.user.store_city
-                }} )<br />
+                <div class="product-seller__info">
+                  <span class="product-seller__name">{{ product.user.store_name }}</span>
+                  {% if product.user.store_location or product.user.store_city %}
+                  <span class="product-seller__location">
+                    {% if product.user.store_location %}{{ product.user.store_location }}{% endif %}{% if product.user.store_location and product.user.store_city %}, {% endif %}{% if product.user.store_city %}{{ product.user.store_city }}{% endif %}
+                  </span>
+                  {% endif %}
+                </div>
                 {% endif %}
               </div>
             </div>
           </div>
           {% endfor %}
-        </div>
-        {% else %}
-        <div class="no-products">
-          <h3>No products available</h3>
-          {% if current_user.is_seller() %}
-          <p>Be the first to post a product!</p>
-          <a href="{{ url_for('post_product') }}" class="btn-primary"
-            >Post a Product</a
-          >
+          </div>
+          {% else %}
+          <div class="empty-state">
+            <h3>No products available just yet</h3>
+            <p>
+              Keep an eye on this space—new listings pop up frequently. You can also explore stores to see what they’re prepping.
+            </p>
+            {% if current_user.is_seller() %}
+            <a href="{{ url_for('post_product') }}" class="empty-action">
+              <i class="fa-solid fa-plus"></i>
+              Post a product
+            </a>
+            {% endif %}
+          </div>
           {% endif %}
         </div>
-        {% endif %}
       </section>
     </main>
 

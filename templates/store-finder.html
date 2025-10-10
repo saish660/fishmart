@@ -147,60 +147,137 @@
     </div>
     <div class="sidebar-overlay" id="sidebar-overlay"></div>
 
-    <main class="main-content">
-      <section class="page-section">
-        <h1>Find Stores</h1>
-
-        <!-- Search + geolocate controls -->
-        <div class="finder-controls">
-          <div class="control-group">
-            <input
-              id="finder-search"
-              class="finder-input"
-              type="text"
-              placeholder="Search a place or area"
-              list="finderSuggestions"
-            />
-            <datalist id="finderSuggestions"></datalist>
-            <button id="finder-detect" class="btn-secondary">
-              Use My Location
-            </button>
-            <button id="finder-reset" class="btn-secondary" type="button">
-              Reset View
-            </button>
+    <main class="page-wrapper">
+      <section class="page-hero store-finder-hero">
+        <div class="page-hero__inner store-finder-hero__inner">
+          <div class="store-finder-hero__copy">
+            <span class="page-hero__eyebrow">Store locator</span>
+            <h1 class="page-hero__title">Find fresh catches near you</h1>
+            <p class="page-hero__subtitle">
+              Discover community-run fish markets, locate them on the live map,
+              and plan your visit with distance hints and rich store cards.
+            </p>
+            <ul class="finder-hero-list">
+              <li><strong>{{ stores|length }}</strong> verified stores on the map</li>
+              <li>Search by area or filter by store name</li>
+              <li>Tap a card to jump straight to the store page</li>
+            </ul>
+            <div class="page-hero__actions">
+              <a href="#finder" class="btn-secondary">Open the map</a>
+              <a href="{{ url_for('products') }}" class="btn-ghost">Browse marketplace</a>
+            </div>
           </div>
-          <!-- Store name filter -->
-          <div class="control-group" style="flex:1 1 240px;">
-            <input
-              id="store-name-filter"
-              class="finder-input"
-              type="text"
-              placeholder="Search stores by name"
-              aria-label="Search stores by name"
-            />
+          <div class="store-finder-hero__visual">
+            <div class="finder-hero-card">
+              <span class="finder-hero-card__label">Live stores</span>
+              <span class="finder-hero-card__value">{{ stores|length }}</span>
+              <p class="finder-hero-card__meta">Curated by the Amcho Pasro community</p>
+            </div>
           </div>
         </div>
+      </section>
 
-        <!-- Map -->
-        <div
-          id="stores-map"
-          class="map-container"
-          aria-label="Map with store locations"
-          data-stores="{{ stores | tojson }}"
-        ></div>
-        <div id="stores-readout" class="map-readout" style="margin-top: 8px">
-          <div>
-            <strong>Center:</strong> <span id="center-lat">—</span>,
-            <span id="center-lng">—</span>
+      <section class="section-block finder-section" id="finder">
+        <div class="page-shell finder-shell">
+          <div class="finder-layout">
+            <aside class="finder-panel surface-card surface-card--quiet">
+              <div class="finder-panel__header">
+                <h2>Plan your visit</h2>
+                <p>
+                  Use the search tools below to zero in on a neighbourhood and get real-time coordinates for precise directions.
+                </p>
+              </div>
+              <form class="finder-form" onsubmit="return false;" autocomplete="off">
+                <div class="finder-form__group">
+                  <label for="finder-search">Search an area</label>
+                  <div class="finder-form__field">
+                    <input
+                      id="finder-search"
+                      class="finder-input"
+                      type="text"
+                      placeholder="Try Margao, Panjim, Vasco..."
+                      list="finderSuggestions"
+                    />
+                    <datalist id="finderSuggestions"></datalist>
+                  </div>
+                  <small>Powered by OpenStreetMap search.</small>
+                </div>
+
+                <div class="finder-form__actions">
+                  <button id="finder-detect" class="btn-secondary" type="button">
+                    Use My Location
+                  </button>
+                  <button id="finder-reset" class="btn-ghost" type="button">
+                    Reset View
+                  </button>
+                </div>
+
+                <div class="finder-form__group">
+                  <label for="store-name-filter">Filter by store name</label>
+                  <div class="finder-form__field">
+                    <input
+                      id="store-name-filter"
+                      class="finder-input"
+                      type="text"
+                      placeholder="e.g. Mandovi Fishers"
+                      aria-label="Search stores by name"
+                    />
+                  </div>
+                </div>
+              </form>
+
+              <div class="finder-tips">
+                <h3>Quick tips</h3>
+                <ul>
+                  <li>Pan the map or pinch on mobile to explore everything around you.</li>
+                  <li>Click any marker to open a store preview and jump to its page.</li>
+                  <li>Reset view to refocus on the full coastline whenever you're done.</li>
+                </ul>
+              </div>
+            </aside>
+
+            <div class="finder-map-card glassy-panel">
+              <div class="finder-map-card__header">
+                <h2>Interactive map</h2>
+                <p>All stores plotted with clustering for faster browsing.</p>
+              </div>
+              <div
+                id="stores-map"
+                class="map-container"
+                aria-label="Map with store locations"
+                data-stores="{{ stores | tojson }}"
+              ></div>
+              <div id="stores-readout" class="map-readout">
+                <dl>
+                  <div class="map-readout__item">
+                    <dt>Latitude</dt>
+                    <dd id="center-lat">—</dd>
+                  </div>
+                  <div class="map-readout__item">
+                    <dt>Longitude</dt>
+                    <dd id="center-lng">—</dd>
+                  </div>
+                  <div class="map-readout__item map-readout__item--full">
+                    <dt>Approx. area</dt>
+                    <dd id="center-addr">—</dd>
+                  </div>
+                </dl>
+              </div>
+            </div>
           </div>
-          <div class="address-line">
-            <strong>Area:</strong> <span id="center-addr">—</span>
+
+          <div class="finder-results surface-card surface-card--quiet">
+            <div class="finder-results__header">
+              <div>
+                <h2>Stores nearby</h2>
+                <p>
+                  These cards sync with the map above. Distances update automatically when you search for a new area.
+                </p>
+              </div>
+            </div>
+            <div id="store-cards" class="products-grid finder-cards"></div>
           </div>
         </div>
-
-        <!-- Store cards -->
-        <h2 class="section-title">Stores</h2>
-        <div id="store-cards" class="products-grid"></div>
       </section>
     </main>
 

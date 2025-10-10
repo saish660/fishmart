@@ -108,19 +108,31 @@
     <!-- Overlay for mobile sidebar -->
     <div class="sidebar-overlay" id="sidebar-overlay"></div>
 
-    <!-- Main Content -->
-    <main class="main-content">
-      <section class="auth-section">
-        <div class="auth-container">
-          <div class="auth-card">
-            <div class="auth-header">
-              <h1 class="auth-title">Join as Seller</h1>
-              <p class="auth-subtitle">
-                Start selling your locally made products on Amcho Pasro
+    <main class="page-wrapper">
+      <section class="page-hero auth-hero">
+        <div class="page-hero__inner auth-hero__inner">
+          <div class="auth-hero__copy">
+            <span class="page-hero__eyebrow">Seller onboarding</span>
+            <h1 class="page-hero__title">Bring your catch to the community</h1>
+            <p class="auth-hero__subtitle">
+              Launch your Amcho Pasro storefront, pin your exact location, and
+              start sharing the freshest seafood with local buyers.
+            </p>
+            <ul class="auth-hero__list">
+              <li>Showcase your specialty products with rich profiles</li>
+              <li>Let customers find you easily with precise map markers</li>
+              <li>Manage listings and updates from an intuitive dashboard</li>
+            </ul>
+          </div>
+
+          <div class="auth-card auth-card--wide auth-card--stacked">
+            <div class="auth-card__header">
+              <h2 class="auth-card__title">Join as a seller</h2>
+              <p class="auth-card__subtitle">
+                Tell us a little about yourself and your store to get started.
               </p>
             </div>
 
-            <!-- Flash Messages -->
             {% with messages = get_flashed_messages(with_categories=true) %} {%
             if messages %}
             <div class="flash-messages">
@@ -136,41 +148,41 @@
               class="auth-form"
               method="POST"
               action="{{ url_for('seller_signup') }}"
+              enctype="multipart/form-data"
             >
-              <!-- Personal Information -->
               <div class="form-section">
-                <h3 class="section-title">Personal Information</h3>
+                <h3 class="section-title">Personal information</h3>
                 <div class="form-row">
                   <div class="form-group">
-                    <label for="firstName">First Name</label>
+                    <label for="firstName">First name</label>
                     <input
                       type="text"
                       id="firstName"
                       name="firstName"
+                      placeholder="E.g. Clara"
                       required
-                      placeholder="Enter your first name"
                     />
                   </div>
                   <div class="form-group">
-                    <label for="lastName">Last Name</label>
+                    <label for="lastName">Last name</label>
                     <input
                       type="text"
                       id="lastName"
                       name="lastName"
+                      placeholder="E.g. D'Souza"
                       required
-                      placeholder="Enter your last name"
                     />
                   </div>
                 </div>
 
                 <div class="form-group">
-                  <label for="email">Email Address</label>
+                  <label for="email">Email address</label>
                   <input
                     type="email"
                     id="email"
                     name="email"
+                    placeholder="name@example.com"
                     required
-                    placeholder="Enter your email"
                   />
                 </div>
 
@@ -181,8 +193,8 @@
                       type="password"
                       id="password"
                       name="password"
-                      required
                       placeholder="Create a password"
+                      required
                     />
                     <button
                       type="button"
@@ -192,20 +204,18 @@
                       <span class="password-toggle-text">Show</span>
                     </button>
                   </div>
-                  <div class="password-requirements">
-                    <small>Password must be at least 8 characters long</small>
-                  </div>
+                  <small>Password must be at least 8 characters long.</small>
                 </div>
 
                 <div class="form-group">
-                  <label for="confirmPassword">Confirm Password</label>
+                  <label for="confirmPassword">Confirm password</label>
                   <div class="password-field">
                     <input
                       type="password"
                       id="confirmPassword"
                       name="confirmPassword"
+                      placeholder="Re-enter your password"
                       required
-                      placeholder="Confirm your password"
                     />
                     <button
                       type="button"
@@ -218,131 +228,125 @@
                 </div>
               </div>
 
-              <!-- Business Information -->
               <div class="form-section">
-                <h3 class="section-title">Business Information</h3>
+                <h3 class="section-title">Storefront details</h3>
                 <div class="form-group">
-                  <label for="storeName">Store/Business Name</label>
+                  <label for="storeName">Store or business name</label>
                   <input
                     type="text"
                     id="storeName"
                     name="storeName"
+                    placeholder="E.g. Mandovi Fish Collective"
                     required
-                    placeholder="e.g., Goa Handmade Collective"
                   />
                 </div>
 
                 <div class="form-group">
-                  <label for="storeLocation">Store Location/Address</label>
+                  <label for="storeLocation">Neighbourhood / address</label>
                   <input
                     type="text"
                     id="storeLocation"
                     name="storeLocation"
+                    placeholder="E.g. Market Road, Panaji"
                     required
-                    placeholder="e.g., 123 Market Lane, Near Panaji Market"
                   />
                 </div>
 
                 <div class="form-group">
-                  <label for="storeCity">Store City</label>
+                  <label for="storeCity">City</label>
                   <input
                     type="text"
                     id="storeCity"
                     name="storeCity"
+                    placeholder="E.g. Panaji"
                     required
-                    placeholder="e.g., Panaji, Mapusa, Margao"
                   />
                 </div>
+
                 <div class="form-group">
-                  <label for="storeImage">Store Profile Image (optional)</label>
+                  <label for="storeImage">Store profile image (optional)</label>
                   <input
                     type="file"
                     id="storeImage"
                     name="storeImage"
                     accept="image/*"
                   />
-                  <small>If not uploaded, a default image will be used.</small>
+                  <small
+                    >If you skip this, we will use a friendly default.</small
+                  >
+                </div>
+              </div>
+
+              <div class="form-section">
+                <h3 class="section-title">Pin your shop on the map</h3>
+                <div class="form-group">
+                  <label for="addressSearch">Search shop address</label>
+                  <input
+                    type="text"
+                    id="addressSearch"
+                    name="addressSearch"
+                    placeholder="Search address or place (powered by OpenStreetMap)"
+                    list="addressSuggestions"
+                    autocomplete="off"
+                  />
+                  <datalist id="addressSuggestions"></datalist>
                 </div>
 
-                <!-- Shop Location Picker -->
-                <div class="form-section">
-                  <h3 class="section-title">Shop Location Picker</h3>
-                  <div class="form-group">
-                    <label for="addressSearch">Search Shop Address</label>
-                    <input
-                      type="text"
-                      id="addressSearch"
-                      name="addressSearch"
-                      placeholder="Search address or place (powered by OpenStreetMap)"
-                      list="addressSuggestions"
-                      autocomplete="off"
-                    />
-                    <datalist id="addressSuggestions"></datalist>
-                  </div>
-
-                  <div class="form-actions-row">
-                    <button
-                      type="button"
-                      id="detectLocationBtn"
-                      class="secondary-button"
-                    >
-                      Detect My Location
-                    </button>
-                  </div>
-
-                  <div
-                    id="shop-map"
-                    class="map-container"
-                    aria-label="Shop location map"
-                  ></div>
-
-                  <p class="map-hint">
-                    <small
-                      >Tip: Click anywhere on the map to place/move the marker,
-                      or drag the marker to fine-tune the location.</small
-                    >
-                  </p>
-
-                  <div class="map-readout">
-                    <div>
-                      <strong>Latitude:</strong> <span id="current-lat">—</span>
-                    </div>
-                    <div>
-                      <strong>Longitude:</strong>
-                      <span id="current-lng">—</span>
-                    </div>
-                    <div class="address-line">
-                      <strong>Address:</strong>
-                      <span id="current-address">—</span>
-                    </div>
-                  </div>
-
-                  <!-- Hidden inputs submitted with the form -->
-                  <input type="hidden" name="latitude" id="latitude" />
-                  <input type="hidden" name="longitude" id="longitude" />
-                  <input type="hidden" name="address" id="address" />
+                <div class="form-actions-row">
+                  <button
+                    type="button"
+                    id="detectLocationBtn"
+                    class="secondary-button"
+                  >
+                    Detect my location
+                  </button>
                 </div>
+
+                <div
+                  id="shop-map"
+                  class="map-container"
+                  aria-label="Shop location map"
+                ></div>
+
+                <p class="map-hint">
+                  Tip: Drop or drag the marker to pinpoint your storefront.
+                </p>
+
+                <div class="map-readout">
+                  <div>
+                    <strong>Latitude:</strong> <span id="current-lat">—</span>
+                  </div>
+                  <div>
+                    <strong>Longitude:</strong> <span id="current-lng">—</span>
+                  </div>
+                  <div>
+                    <strong>Address:</strong>
+                    <span id="current-address">—</span>
+                  </div>
+                </div>
+
+                <input type="hidden" name="latitude" id="latitude" />
+                <input type="hidden" name="longitude" id="longitude" />
+                <input type="hidden" name="address" id="address" />
               </div>
 
               <button type="submit" class="auth-button">
-                Create Seller Account
+                Create seller account
               </button>
 
-              <div class="auth-divider">
-                <span>or</span>
-              </div>
+              <div class="auth-divider"><span>or</span></div>
 
               <div class="auth-footer">
                 <p>
-                  Want to sign up as a buyer?
+                  Prefer to browse first?
                   <a href="{{ url_for('signup') }}" class="auth-link"
-                    >Buyer signup</a
+                    >Join as a buyer</a
                   >
                 </p>
                 <p>
-                  Already have an account?
+                  Already onboard?
                   <a href="{{ url_for('login') }}" class="auth-link"
-                    >Sign in here</a
+                    >Sign in to manage your listings</a
                   >
                 </p>
               </div>

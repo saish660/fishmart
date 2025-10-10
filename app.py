@@ -394,7 +394,7 @@ def seller_signup():
             flash("Seller account created successfully! Please log in.", "success")
             return redirect(url_for("login"))
     
-    return render_template("fisherman-signup.html")
+    return render_template("seller-signup.html")
 
 @app.route("/post-product", methods=["GET", "POST"])
 @login_required

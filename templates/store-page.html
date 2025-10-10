@@ -146,12 +146,10 @@
     <div class="sidebar-overlay" id="sidebar-overlay"></div>
 
     {% set product_count = products|length %}
-    {% set aggregates = namespace(quantity=0, value=0) %}
+    {% set aggregates = namespace(value=0) %}
     {% for product in products %}
-      {% set aggregates.quantity = aggregates.quantity + (product.quantity or 0) %}
       {% set aggregates.value = aggregates.value + (product.price or 0) %}
     {% endfor %}
-    {% set total_quantity = aggregates.quantity %}
     {% set total_value = aggregates.value %}
     {% set avg_price = (total_value / product_count) if product_count else 0 %}
     {% set rating = store_owner.get_store_rating() %}
@@ -170,17 +168,13 @@
               src="{{ url_for('static', filename=( 'uploads/' ~ store_owner.store_image ) if store_owner.store_image else 'images/default_store_img.png') }}"
               alt="{{ store_owner.store_name }} profile"
             />
-            <span class="hero-status">
-              <span class="status-dot"></span>
-              Seller Spotlight
-            </span>
           </div>
           <div class="hero-details">
             <div class="hero-heading">
               <h1>{{ store_owner.store_name }}</h1>
               <div class="hero-location">
                 <span class="icon">📍</span>
-                {{ store_owner.store_location or 'Location coming soon' }},
+                {{ store_owner.store_location or 'LOCATION ERROR' }},
                 {{ store_owner.store_city or 'City' }}
               </div>
             </div>
@@ -203,10 +197,6 @@
                     {% endif %}
                   </small>
                 </div>
-              </div>
-              <div class="hero-badges">
-                <span class="hero-badge">Fresh catch guarantee</span>
-                <span class="hero-badge">Community trusted</span>
               </div>
             </div>
           </div>
@@ -235,19 +225,14 @@
             <span class="stat-hint">Updated {{ (latest_product.created_at.strftime('%b %d, %Y')) if latest_product else '—' }}</span>
           </div>
           <div class="stat-card">
-            <span class="stat-label">Total inventory</span>
-            <span class="stat-value">{{ total_quantity or 0 }}</span>
-            <span class="stat-hint">Items ready to ship</span>
-          </div>
-          <div class="stat-card">
             <span class="stat-label">Avg. price</span>
             <span class="stat-value">₹{{ '%.0f'|format(avg_price) if avg_price else '—' }}</span>
             <span class="stat-hint">Across current catalog</span>
           </div>
           <div class="stat-card">
-            <span class="stat-label">Customer love</span>
+            <span class="stat-label">Customer Reviews</span>
             <span class="stat-value">{{ review_count }}</span>
-            <span class="stat-hint">Reviews collected</span>
+            <span class="stat-hint">Review(s) collected</span>
           </div>
         </div>
       </div>
@@ -406,10 +391,6 @@
                       </p>
                       <div class="product-card__meta">
                         <span class="product-card__meta-item">
-                          <span class="icon">📦</span>
-                          {{ product.quantity }} in stock
-                        </span>
-                        <span class="product-card__meta-item">
                           <span class="icon">🗓</span>
                           {{ product.created_at.strftime('%b %d, %Y') }}
                         </span>
@@ -434,7 +415,7 @@
           </section>
 
           <aside class="panel panel--side">
-            <div class="panel__block">
+            <div class="panel__block panel__block--compact">
               <h3>Store at a glance</h3>
               <ul class="glance-list">
                 <li>
@@ -450,8 +431,8 @@
                   <span class="value">{{ store_owner.store_city or '—' }}</span>
                 </li>
                 <li>
-                  <span class="label">Inventory depth</span>
-                  <span class="value">{{ total_quantity or 0 }} pcs across {{ product_count }} product{{ '' if product_count == 1 else 's' }}</span>
+                  <span class="label">Live listings</span>
+                  <span class="value">{{ product_count }} active product{{ '' if product_count == 1 else 's' }}</span>
                 </li>
               </ul>
             </div>
@@ -481,14 +462,6 @@
               </div>
             {% endif %}
 
-            <div class="panel__block tips">
-              <h3>Pro tips</h3>
-              <ul>
-                <li>Keep photos bright and clear to build trust.</li>
-                <li>Use the map pin to make pickup orders easier.</li>
-                <li>Encourage customers to drop a review after each sale.</li>
-              </ul>
-            </div>
           </aside>
         </div>
 

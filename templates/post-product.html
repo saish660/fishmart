@@ -120,153 +120,164 @@
     <!-- Overlay for mobile sidebar -->
     <div class="sidebar-overlay" id="sidebar-overlay"></div>
 
-    <!-- Main Content -->
-    <main class="main-content">
-      <section class="post-product-section">
-        <div class="container">
-          <div class="form-header">
-            <h1>Post Your Product</h1>
-            <p>Share your locally made products with buyers in Goa</p>
-          </div>
-
-          <!-- Flash Messages -->
-          {% with messages = get_flashed_messages(with_categories=true) %} {% if
-          messages %}
-          <div class="flash-messages">
-            {% for category, message in messages %}
-            <div class="flash-message flash-{{ category }}">{{ message }}</div>
-            {% endfor %}
-          </div>
-          {% endif %} {% endwith %}
-
-          <form
-            class="post-product-form"
-            method="POST"
-            action="{{ url_for('post_product') }}"
-            enctype="multipart/form-data"
-          >
-            <div class="form-row">
-              <div class="form-group">
-                <label for="productTitle">Product Title *</label>
-                <input
-                  type="text"
-                  id="productTitle"
-                  name="title"
-                  placeholder="e.g., Handcrafted Bamboo Basket"
-                  required
-                />
-                <small class="form-hint"
-                  >Enter a descriptive name for your product (Include Contact
-                  Details if required)</small
-                >
-              </div>
+    <main class="page-wrapper">
+      <section class="page-hero post-product-hero">
+        <div class="page-hero__inner post-product-hero__inner">
+          <div class="post-product-hero__copy">
+            <span class="page-hero__eyebrow">Seller tools</span>
+            <h1 class="page-hero__title">Share your latest catch</h1>
+            <p class="post-product-hero__subtitle">
+              Bring your freshest listings to life with rich descriptions, beautiful imagery, and upfront pricing so customers know exactly what to expect.
+            </p>
+            <ul class="post-product-hero__list">
+              <li>Highlight origin details and seasonal specials</li>
+              <li>Attach high quality photos straight from your phone</li>
+              <li>Sync listings instantly to your storefront and the map</li>
+            </ul>
+            <div class="page-hero__actions">
+              <a href="{{ url_for('my_store') }}" class="btn-ghost">Preview my store</a>
+              <a href="{{ url_for('products') }}" class="btn-secondary">Browse marketplace</a>
             </div>
+          </div>
+        </div>
+      </section>
 
-            <div class="form-row">
-              <div class="form-group half-width">
-                <label for="productPrice">Price *</label>
-                <div class="price-input-group">
-                  <span class="currency-symbol">₹</span>
+      <section class="section-block post-product-section" id="post-product">
+        <div class="page-shell post-product-shell">
+          {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+              <div class="flash-stack">
+                {% for category, message in messages %}
+                  <div class="flash-card flash-{{ category }}">{{ message }}</div>
+                {% endfor %}
+              </div>
+            {% endif %}
+          {% endwith %}
+
+          <div class="surface-card surface-card--quiet post-product-card">
+            <header class="post-product-card__header">
+              <div>
+                <h2>Create a new listing</h2>
+                <p>Complete the details below and publish in seconds.</p>
+              </div>
+              <span class="post-product-card__badge">Seller dashboard</span>
+            </header>
+
+            <form
+              class="post-product-form"
+              method="POST"
+              action="{{ url_for('post_product') }}"
+              enctype="multipart/form-data"
+            >
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="productTitle">Product title *</label>
                   <input
-                    type="number"
-                    id="productPrice"
-                    name="price"
-                    placeholder="0.00"
-                    step="0.01"
-                    min="0"
+                    type="text"
+                    id="productTitle"
+                    name="title"
+                    placeholder="E.g. Fresh pomfret catch"
                     required
                   />
+                  <small class="form-hint">Include the key detail shoppers will ask for first.</small>
                 </div>
               </div>
 
-              <div class="form-group half-width">
-                <label for="productQuantity">Quantity for Price</label>
-                <div class="quantity-input-group">
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="productPrice">Price *</label>
+                  <div class="price-input-group">
+                    <span class="currency-symbol">₹</span>
+                    <input
+                      type="number"
+                      id="productPrice"
+                      name="price"
+                      placeholder="0.00"
+                      step="0.01"
+                      min="0"
+                      required
+                    />
+                  </div>
+                  <small class="form-hint">Share the per-unit or per-basket price that buyers will pay.</small>
+                </div>
+
+                <div class="form-group">
+                  <label for="productQuantity">Quantity for price</label>
+                  <div class="quantity-input-group">
+                    <input
+                      type="number"
+                      id="productQuantity"
+                      name="quantity"
+                      placeholder="E.g. 2 kg"
+                      min="0"
+                    />
+                  </div>
+                  <small class="form-hint">Optional: explain the weight or count included.</small>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="productCity">City / pick-up location *</label>
                   <input
-                    type="number"
-                    id="productQuantity"
-                    name="quantity"
-                    placeholder="0"
-                    min="0"
+                    type="text"
+                    id="productCity"
+                    name="city"
+                    placeholder="E.g. Mapusa market"
+                    required
                   />
+                  <small class="form-hint">Customers will use this to plan their visit.</small>
                 </div>
-                <small class="form-hint"
-                  >Optional - How much quantity for the price</small
-                >
               </div>
-            </div>
 
-            <div class="form-row">
-              <div class="form-group">
-                <label for="productCity">City/Location *</label>
-                <input
-                  type="text"
-                  id="productCity"
-                  name="city"
-                  placeholder="e.g., Panaji, Goa"
-                  required
-                />
-                <small class="form-hint"
-                  ><!-- Location input removed: store location will be used instead --></small
-                >
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="productCategory">Category</label>
+                  <select id="productCategory" name="category">
+                    <option value="">-- Select a category --</option>
+                    {% for cat in categories %}
+                      <option value="{{ cat.id }}">{{ cat.name }}</option>
+                    {% endfor %}
+                  </select>
+                  <small class="form-hint">Help buyers filter faster by tagging the right category.</small>
+                </div>
               </div>
-            </div>
 
-            <div class="form-row">
-              <div class="form-group">
-                <label for="productDescription">Description</label>
-                <textarea
-                  id="productDescription"
-                  name="description"
-                  placeholder="Describe your product - materials, features, size, etc."
-                  rows="4"
-                ></textarea>
-                <small class="form-hint"
-                  >Optional - add details about quality, origin, or how it's
-                  made</small
-                >
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="productDescription">Description</label>
+                  <textarea
+                    id="productDescription"
+                    name="description"
+                    placeholder="Share preparation tips, catch time, sustainability notes, etc."
+                    rows="4"
+                  ></textarea>
+                </div>
               </div>
-            </div>
 
-            <div class="form-row">
-              <div class="form-group">
-                <label for="productCategory">Category</label>
-                <select id="productCategory" name="category">
-                  <option value="">-- Select a category --</option>
-                  {% for cat in categories %}
-                    <option value="{{ cat.id }}">{{ cat.name }}</option>
-                  {% endfor %}
-                </select>
-                <small class="form-hint">Choose the category that best fits your product.</small>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="productImage">Product image *</label>
+                  <input
+                    type="file"
+                    id="productImage"
+                    name="image"
+                    accept="image/*"
+                    class="file-input"
+                    required
+                  />
+                  <small class="form-hint">Upload a clear JPG or PNG under 5MB.</small>
+                </div>
               </div>
-            </div>
 
-            <div class="form-row">
-              <div class="form-group">
-                <label for="productImage">Product Image *</label>
-                <input
-                  type="file"
-                  id="productImage"
-                  name="image"
-                  accept="image/*"
-                  class="file-input"
-                  required
-                />
-                <small class="form-hint">PNG, JPG, JPEG up to 5MB</small>
+              <div class="form-actions">
+                <button type="button" class="btn-ghost" onclick="history.back()">
+                  Cancel
+                </button>
+                <button type="submit" class="btn-secondary">Post product</button>
               </div>
-            </div>
-
-            <div class="form-actions">
-              <button
-                type="button"
-                class="btn-secondary"
-                onclick="history.back()"
-              >
-                Cancel
-              </button>
-              <button type="submit" class="btn-primary">Post Product</button>
-            </div>
-          </form>
+            </form>
+          </div>
         </div>
       </section>
     </main>

@@ -583,6 +583,7 @@
 
 .panel--side {
   gap: 1.6rem;
+  align-self: start;
 }
 
 .panel__header {
@@ -735,10 +736,21 @@
   gap: 1.1rem;
 }
 
+.panel__block--compact {
+  padding: 1.15rem 1.25rem;
+  gap: 0.8rem;
+}
+
 .glance-list {
   list-style: none;
+  margin: 0;
+  padding: 0;
   display: grid;
   gap: 1rem;
+}
+
+.panel__block--compact .glance-list {
+  gap: 0.75rem;
 }
 
 .glance-list li {
@@ -747,6 +759,12 @@
   align-items: baseline;
   gap: 1rem;
   font-size: 0.92rem;
+  flex-wrap: nowrap;
+  width: 100%;
+}
+
+.panel__block--compact .glance-list li {
+  align-items: center;
 }
 
 .glance-list .label {
@@ -900,6 +918,14 @@
 
   .panel--wide {
     padding: 2.4rem;
+  }
+
+  .panel__block--compact .glance-list {
+    grid-template-columns: 1fr;
+  }
+
+  .panel__block--compact .glance-list li {
+    align-items: baseline;
   }
 
   .panel--side {

@@ -18,6 +18,7 @@
     />
   </head>
   <body>
+    <!-- Navbar -->
     <nav class="navbar">
       <div class="navbar-container">
         <div class="navbar-brand">
@@ -25,162 +26,140 @@
         </div>
       </div>
     </nav>
-    <div
-      class="modal-overlay"
-      style="
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        background: rgba(0, 0, 0, 0.45);
-        z-index: 1000;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      "
-    >
-      <div
-        class="modal-form"
-        style="
-          background: #fff;
-          padding: 2.5rem 2rem 2rem 2rem;
-          border-radius: 18px;
-          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
-          max-width: 420px;
-          width: 100%;
-          position: relative;
-        "
-      >
-        <button
-          onclick="window.location.href='{{ url_for('my_store') }}'"
-          style="
-            position: absolute;
-            top: 18px;
-            right: 18px;
-            background: none;
-            border: none;
-            font-size: 1.8rem;
-            line-height: 1;
-            color: #475569;
-            cursor: pointer;
-          "
-        >
-          &times;
-        </button>
-        <h2 style="margin-bottom: 1.2rem; text-align: center">
-          Edit Store Details
-        </h2>
-        <form method="POST" enctype="multipart/form-data">
-          <div class="form-group" style="margin-bottom: 1rem">
-            <label for="store_name">Store Name:</label>
-            <input
-              type="text"
-              id="store_name"
-              name="store_name"
-              value="{{ user.store_name }}"
-              required
-              style="width: 100%; padding: 0.5rem; margin-top: 0.3rem"
-            />
+
+    <main class="page-wrapper">
+      <section class="page-hero auth-hero">
+        <div class="page-hero__inner auth-hero__inner">
+          <div class="auth-hero__copy">
+            <span class="page-hero__eyebrow">Store profile</span>
+            <h1 class="page-hero__title">Refresh your storefront details</h1>
+            <p class="auth-hero__subtitle">
+              Keep your location and branding up to date so customers can reach
+              you effortlessly and recognise your stall on the map.
+            </p>
+            <ul class="auth-hero__list">
+              <li>Update your contact location and city in one place</li>
+              <li>Swap your display image to showcase your latest look</li>
+              <li>Fine-tune coordinates for precise map directions</li>
+            </ul>
           </div>
-          <div class="form-group" style="margin-bottom: 1rem">
-            <label for="store_location">Location:</label>
-            <input
-              type="text"
-              id="store_location"
-              name="store_location"
-              value="{{ user.store_location }}"
-              required
-              style="width: 100%; padding: 0.5rem; margin-top: 0.3rem"
-            />
-          </div>
-          <div class="form-group" style="margin-bottom: 1rem">
-            <label for="store_city">City:</label>
-            <input
-              type="text"
-              id="store_city"
-              name="store_city"
-              value="{{ user.store_city }}"
-              required
-              style="width: 100%; padding: 0.5rem; margin-top: 0.3rem"
-            />
-          </div>
-          <div class="form-group" style="margin-bottom: 1rem">
-            <label for="address">Full Address (optional):</label>
-            <input
-              type="text"
-              id="address"
-              name="address"
-              value="{{ user.store_address }}"
-              style="width: 100%; padding: 0.5rem; margin-top: 0.3rem"
-            />
-          </div>
-          <div
-            class="form-row"
-            style="display: flex; gap: 1rem; margin-bottom: 1rem"
-          >
-            <div style="flex: 1">
-              <label for="latitude">Latitude:</label>
-              <input
-                type="text"
-                id="latitude"
-                name="latitude"
-                value="{{ user.store_latitude }}"
-                style="width: 100%; padding: 0.5rem; margin-top: 0.3rem"
-              />
+
+          <div class="auth-card auth-card--stacked">
+            <div class="auth-card__header">
+              <h2 class="auth-card__title">Edit store details</h2>
+              <p class="auth-card__subtitle">
+                Update your information below and save when you are done.
+              </p>
             </div>
-            <div style="flex: 1">
-              <label for="longitude">Longitude:</label>
-              <input
-                type="text"
-                id="longitude"
-                name="longitude"
-                value="{{ user.store_longitude }}"
-                style="width: 100%; padding: 0.5rem; margin-top: 0.3rem"
-              />
-            </div>
+
+            <form class="auth-form" method="POST" enctype="multipart/form-data">
+              <div class="form-section">
+                <h3 class="section-title">Storefront basics</h3>
+                <div class="form-group">
+                  <label for="store_name">Store name</label>
+                  <input
+                    type="text"
+                    id="store_name"
+                    name="store_name"
+                    value="{{ user.store_name }}"
+                    required
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="store_location">Neighbourhood / address</label>
+                  <input
+                    type="text"
+                    id="store_location"
+                    name="store_location"
+                    value="{{ user.store_location }}"
+                    required
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="store_city">City</label>
+                  <input
+                    type="text"
+                    id="store_city"
+                    name="store_city"
+                    value="{{ user.store_city }}"
+                    required
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="address">Full address (optional)</label>
+                  <input
+                    type="text"
+                    id="address"
+                    name="address"
+                    value="{{ user.store_address }}"
+                  />
+                </div>
+              </div>
+
+              <div class="form-section">
+                <h3 class="section-title">Map coordinates</h3>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="latitude">Latitude</label>
+                    <input
+                      type="text"
+                      id="latitude"
+                      name="latitude"
+                      value="{{ user.store_latitude }}"
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label for="longitude">Longitude</label>
+                    <input
+                      type="text"
+                      id="longitude"
+                      name="longitude"
+                      value="{{ user.store_longitude }}"
+                    />
+                  </div>
+                </div>
+                <small
+                  >Copy coordinates from the store map if you recently
+                  repositioned your marker.</small
+                >
+              </div>
+
+              <div class="form-section">
+                <h3 class="section-title">Store image</h3>
+                {% if user.store_image %}
+                <div class="form-group">
+                  <label>Current image</label>
+                  <div
+                    class="store-image-thumb"
+                    style="width: 86px; height: 86px"
+                  >
+                    <img
+                      src="{{ url_for('static', filename='uploads/' ~ user.store_image) }}"
+                      alt="Current store image"
+                    />
+                  </div>
+                </div>
+                {% endif %}
+                <div class="form-group">
+                  <label for="store_image">Upload a new image</label>
+                  <input
+                    type="file"
+                    id="store_image"
+                    name="store_image"
+                    accept="image/*"
+                  />
+                  <small>Square JPG or PNG works best. Max size 5MB.</small>
+                </div>
+              </div>
+
+              <div class="form-actions-row form-actions-row--end">
+                <a href="{{ url_for('my_store') }}" class="btn-ghost">Cancel</a>
+                <button type="submit" class="auth-button">Save changes</button>
+              </div>
+            </form>
           </div>
-          <div class="form-group" style="margin-bottom: 1.2rem">
-            <label for="store_image">Store Image:</label><br />
-            {% if user.store_image %}
-            <img
-              src="{{ url_for('static', filename='uploads/' ~ user.store_image) }}"
-              alt="Current Store Image"
-              style="
-                max-width: 80px;
-                max-height: 80px;
-                border-radius: 50%;
-                object-fit: cover;
-                margin-bottom: 0.5rem;
-              "
-            />
-            {% endif %}
-            <input
-              type="file"
-              id="store_image"
-              name="store_image"
-              accept="image/*"
-              style="margin-top: 0.3rem"
-            />
-          </div>
-          <button
-            type="submit"
-            class="btn-submit"
-            style="
-              width: 100%;
-              padding: 0.7rem 0;
-              font-size: 1.1rem;
-              background: #2563eb;
-              color: #fff;
-              border: none;
-              border-radius: 6px;
-              cursor: pointer;
-            "
-          >
-            Save Changes
-          </button>
-        </form>
-      </div>
-    </div>
+        </div>
+      </section>
+    </main>
   </body>
 </html>

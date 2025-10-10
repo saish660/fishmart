@@ -119,17 +119,31 @@
     <!-- Overlay for mobile sidebar -->
     <div class="sidebar-overlay" id="sidebar-overlay"></div>
 
-    <!-- Main Content -->
-    <main class="main-content">
-      <section class="auth-section">
-        <div class="auth-container">
+    <main class="page-wrapper">
+      <section class="page-hero auth-hero">
+        <div class="page-hero__inner auth-hero__inner">
+          <div class="auth-hero__copy">
+            <span class="page-hero__eyebrow">Account access</span>
+            <h1 class="page-hero__title">Welcome back to Amcho Pasro</h1>
+            <p class="auth-hero__subtitle">
+              Track your favourite listings, follow community sellers, and keep
+              an eye on the freshest catches every morning.
+            </p>
+            <ul class="auth-hero__list">
+              <li>Personalised marketplace recommendations</li>
+              <li>Priority messages from nearby sellers</li>
+              <li>Sync your saved stores across devices</li>
+            </ul>
+          </div>
+
           <div class="auth-card">
-            <div class="auth-header">
-              <h1 class="auth-title">Welcome Back</h1>
-              <p class="auth-subtitle">Sign in to your Amcho Pasro account</p>
+            <div class="auth-card__header">
+              <h2 class="auth-card__title">Sign in</h2>
+              <p class="auth-card__subtitle">
+                Enter your registered email and password to continue.
+              </p>
             </div>
 
-            <!-- Flash Messages -->
             {% with messages = get_flashed_messages(with_categories=true) %} {%
             if messages %}
             <div class="flash-messages">
@@ -147,13 +161,13 @@
               action="{{ url_for('login') }}"
             >
               <div class="form-group">
-                <label for="email">Email Address</label>
+                <label for="email">Email address</label>
                 <input
                   type="email"
                   id="email"
                   name="email"
+                  placeholder="name@example.com"
                   required
-                  placeholder="Enter your email"
                 />
               </div>
 
@@ -164,8 +178,8 @@
                     type="password"
                     id="password"
                     name="password"
-                    required
                     placeholder="Enter your password"
+                    required
                   />
                   <button
                     type="button"
@@ -177,17 +191,15 @@
                 </div>
               </div>
 
-              <button type="submit" class="auth-button">Sign In</button>
+              <button type="submit" class="auth-button">Sign in</button>
 
-              <div class="auth-divider">
-                <span>or</span>
-              </div>
+              <div class="auth-divider"><span>or</span></div>
 
               <div class="auth-footer">
                 <p>
-                  Don't have an account?
+                  New to the marketplace?
                   <a href="{{ url_for('signup') }}" class="auth-link"
-                    >Sign up here</a
+                    >Create a free account</a
                   >
                 </p>
               </div>
