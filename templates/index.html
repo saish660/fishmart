@@ -120,192 +120,281 @@
     <!-- Overlay for mobile sidebar -->
     <div class="sidebar-overlay" id="sidebar-overlay"></div>
 
-    <main class="main-content has-hero">
-      <section class="hero-section">
-        <div class="hero-background">
-          <div class="hero-overlay"></div>
-          <div class="hero-content" id="hero-content">
-            <h1 class="hero-title">Welcome to Amcho Pasro</h1>
-            <p class="hero-subtitle">
-              Your marketplace for locally made products in Goa
+    <main class="landing-main">
+      <section class="hero hero--landing">
+        <div class="hero__layer"></div>
+        <div class="container hero__container">
+          <div class="hero__copy">
+            <span class="eyebrow">Goa's community marketplace</span>
+            <h1>Explore coastal craft and daily catches in real time</h1>
+            <p>
+              Amcho Pasro connects curious buyers with independent sellers who
+              share what they have on hand—fresh finds, handmade pieces, and
+              seasonal staples. Browse what’s available and reach out directly
+              when something catches your eye.
             </p>
-            <p class="hero-description">
-              At Amcho Pasro, we bring you a curated selection of authentic,
-              locally made products from Goa’s creators and small businesses.
-              We’re committed to quality, transparency, and attentive
-              service—connecting you with great local finds as they become
-              available.
-            </p>
-            <div class="hero-buttons">
+            <div class="hero__actions">
               <a href="{{ url_for('products') }}" class="cta-button primary"
-                >View Products</a
+                >Browse the marketplace</a
               >
-              <a href="{{ url_for('signup') }}" class="cta-button secondary"
-                >Sign Up</a
+              {% if current_user.is_authenticated and current_user.is_seller() %}
+              <a href="{{ url_for('post_product') }}" class="cta-button ghost"
+                >Share a new product</a
               >
+              {% else %}
+              <a href="{{ url_for('seller_signup') }}" class="cta-button ghost"
+                >List your store</a
+              >
+              {% endif %}
             </div>
-            <div class="hero-scroll">
-              <i class="fa-solid fa-angles-down"></i>
+            <div class="hero__chips" aria-label="Popular categories">
+              <span class="chip">
+                <i class="fa-solid fa-basket-shopping"></i>
+                Fresh produce
+              </span>
+              <span class="chip">
+                <i class="fa-solid fa-gift"></i>
+                Handmade keepsakes
+              </span>
+              <span class="chip">
+                <i class="fa-solid fa-water"></i>
+                Coastal essentials
+              </span>
+            </div>
+          </div>
+          <div class="hero__media">
+            <div class="hero-stack">
+              <div class="hero-stack__item">
+                <i class="fa-solid fa-seedling"></i>
+                <span>Organic farms from Salcete</span>
+              </div>
+              <div class="hero-stack__item">
+                <i class="fa-solid fa-mortar-pestle"></i>
+                <span>Local spice roasters</span>
+              </div>
+              <div class="hero-stack__item">
+                <i class="fa-solid fa-fish"></i>
+                <span>Day-boat seafood updates</span>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
+      <section class="highlight-strip" aria-label="Marketplace highlights">
+        <div class="container highlight-strip__container">
+          <div class="highlight-strip__item">
+            <i class="fa-solid fa-store"></i>
+            <span>Independent storefronts across Goa</span>
+          </div>
+          <div class="highlight-strip__item">
+            <i class="fa-solid fa-message"></i>
+            <span>Direct messages between buyers and sellers</span>
+          </div>
+          <div class="highlight-strip__item">
+            <i class="fa-solid fa-calendar-day"></i>
+            <span>Seasonal drops and weekly pop-ups</span>
+          </div>
+          <div class="highlight-strip__item">
+            <i class="fa-solid fa-location-crosshairs"></i>
+            <span>Map-friendly store discovery</span>
+          </div>
+          <div
+            class="highlight-strip__item highlight-strip__item--ghost"
+            aria-hidden="true"
+          >
+            <i class="fa-solid fa-store"></i>
+            <span>Independent storefronts across Goa</span>
+          </div>
+          <div
+            class="highlight-strip__item highlight-strip__item--ghost"
+            aria-hidden="true"
+          >
+            <i class="fa-solid fa-message"></i>
+            <span>Direct messages between buyers and sellers</span>
+          </div>
+          <div
+            class="highlight-strip__item highlight-strip__item--ghost"
+            aria-hidden="true"
+          >
+            <i class="fa-solid fa-calendar-day"></i>
+            <span>Seasonal drops and weekly pop-ups</span>
+          </div>
+          <div
+            class="highlight-strip__item highlight-strip__item--ghost"
+            aria-hidden="true"
+          >
+            <i class="fa-solid fa-location-crosshairs"></i>
+            <span>Map-friendly store discovery</span>
+          </div>
+        </div>
+      </section>
 
-      <section class="problem-section">
+      <section class="market-preview">
         <div class="container">
-          <div class="problem-content">
-            <h2 class="section-title">Challenges in Finding Local Products</h2>
-            <div class="problem-grid">
-              <div class="feature-item">
-                <i class="fa-solid fa-question-circle fa-2x problem-icon"></i>
-                <h3>Quality Uncertainty</h3>
-                <p>
-                  Shoppers struggle to discover authentic local goods and often
-                  miss out on unique products made nearby.
-                </p>
-              </div>
-              <div class="feature-item">
-                <i class="fa-solid fa-map-location-dot fa-2x problem-icon"></i>
-                <h3>Limited Access</h3>
-                <p>
-                  Many areas lack a reliable way to browse local sellers,
-                  leading to limited access and fewer options.
-                </p>
-              </div>
-              <div class="feature-item">
-                <i class="fa-solid fa-tags fa-2x problem-icon"></i>
-                <h3>Price Transparency</h3>
-                <p>
-                  Hidden markups and unclear pricing make it hard for customers
-                  to get fair value on local products.
-                </p>
-              </div>
-              <div class="feature-item">
-                <i class="fa-solid fa-leaf fa-2x problem-icon"></i>
-                <h3>Sustainability Concerns</h3>
-                <p>
-                  People want to support local artisans and sustainable
-                  businesses but lack information about who makes the products
-                  and how.
-                </p>
-              </div>
-            </div>
-            <div class="problem-solution">
-              <h3>Our Solution</h3>
+          <div class="section-heading">
+            <div>
+              <h2>Peek at what sellers are sharing</h2>
               <p>
-                Amcho Pasro bridges the gap between local makers and buyers with
-                clear sourcing and pricing information. We connect you with
-                trusted sellers across Goa and make it easy to discover new
-                products as they come in.
+                Jump into the marketplace to explore current listings, view
+                pricing from each seller, and arrange the pickup details that
+                work for you.
               </p>
+            </div>
+            <a href="{{ url_for('products') }}" class="text-link"
+              >See all products <i class="fa-solid fa-arrow-right"></i
+            ></a>
+          </div>
+          <div class="preview-grid">
+            <article class="preview-card">
+              <div class="preview-card__image">
+                <img
+                  src="{{ url_for('static', filename='uploads/product_images/20251008_225221_star_crafting.png') }}"
+                  alt="Handmade craft kit"
+                />
+              </div>
+              <div class="preview-card__body">
+                <h3>Handcrafted kits &amp; eco gifts</h3>
+                <p>
+                  Makers from Anjuna share weekend-ready gift bundles with
+                  detailed product notes and custom add-ons.
+                </p>
+                <span class="preview-card__meta">
+                  <i class="fa-solid fa-location-dot"></i>
+                  Mapusa craft lane
+                </span>
+              </div>
+            </article>
+            <article class="preview-card">
+              <div class="preview-card__image">
+                <img
+                  src="{{ url_for('static', filename='uploads/product_images/20251005_222458_image_3.png') }}"
+                  alt="Fresh produce"
+                />
+              </div>
+              <div class="preview-card__body">
+                <h3>Farm-fresh greens</h3>
+                <p>
+                  Small farms keep their stalls updated with harvest notes,
+                  letting you coordinate pick-up right after picking.
+                </p>
+                <span class="preview-card__meta">
+                  <i class="fa-solid fa-location-dot"></i>
+                  Verna village hubs
+                </span>
+              </div>
+            </article>
+            <article class="preview-card">
+              <div class="preview-card__image">
+                <img
+                  src="{{ url_for('static', filename='uploads/product_images/20250929_201822_herb-kit.png') }}"
+                  alt="Herb kit"
+                />
+              </div>
+              <div class="preview-card__body">
+                <h3>DIY pantry staples</h3>
+                <p>
+                  From pickling kits to spice blends, browse ready-to-go sets
+                  with clear ingredient lists from homegrown brands.
+                </p>
+                <span class="preview-card__meta">
+                  <i class="fa-solid fa-location-dot"></i>
+                  Margao maker spaces
+                </span>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="flow-section" aria-labelledby="how-it-works-heading">
+        <div class="container">
+          <h2 id="how-it-works-heading">How it comes together</h2>
+          <div class="flow-grid">
+            <div class="flow-column">
+              <h3>
+                <span class="flow-icon"><i class="fa-solid fa-user"></i></span>
+                For buyers
+              </h3>
+              <ol class="flow-steps">
+                <li>
+                  Discover stores nearby or across Goa using the marketplace or
+                  map view.
+                </li>
+                <li>
+                  Check the latest product notes, photos, and pricing shared by
+                  each seller.
+                </li>
+                <li>
+                  Reach out through the built-in contact options to coordinate
+                  pickup, delivery, or hold requests on your terms.
+                </li>
+              </ol>
+            </div>
+            <div class="flow-column">
+              <h3>
+                <span class="flow-icon"><i class="fa-solid fa-store"></i></span>
+                For sellers
+              </h3>
+              <ol class="flow-steps">
+                <li>
+                  Create a store profile with your location, opening schedule,
+                  and a short introduction.
+                </li>
+                <li>
+                  Post products with photos, quantities, and contact
+                  preferences—update them anytime.
+                </li>
+                <li>
+                  Chat with interested buyers directly and arrange exchange
+                  details that fit your routine.
+                </li>
+              </ol>
             </div>
           </div>
         </div>
       </section>
 
-      <section class="features-section">
-        <div class="container">
-          <h2 class="section-title">Why Use Amcho Pasro?</h2>
-          <h2 class="features_for">For Buyers</h2>
-          <div class="features">
-            <div class="feature-item">
-              <i class="fa-solid fa-search fa-2x feature-icon"></i>
-              <h3>Browse Easily</h3>
-              <p>
-                Explore locally made products from sellers across Goa in one
-                place.
-              </p>
-            </div>
-            <div class="feature-item">
-              <i class="fa-solid fa-clock fa-2x feature-icon"></i>
-              <h3>Save Time</h3>
-              <p>
-                Skip the travel—check availability and compare options from
-                home.
-              </p>
-            </div>
-            <div class="feature-item">
-              <i class="fa-solid fa-list-check fa-2x feature-icon"></i>
-              <h3>Choose What You Want</h3>
-              <p>
-                Find the products and quantities you prefer instead of settling
-                for what's on hand.
-              </p>
-            </div>
+      <section class="cta-panel">
+        <div class="container cta-panel__container">
+          <div class="cta-panel__copy">
+            <h2>Ready to share your market table?</h2>
+            <p>
+              Set up a profile, add photos, and keep your community updated in a
+              few easy steps. Whether you’re a fisherfolk collective or a weekend
+              baker, Amcho Pasro gives you a friendly space to be discovered.
+            </p>
           </div>
-
-          <h2 class="features_for">For Sellers</h2>
-          <div class="features">
-            <div class="feature-item">
-              <i class="fa-solid fa-bullhorn fa-2x feature-icon"></i>
-              <h3>Improve Your Reach</h3>
-              <p>Get people from all over Goa to discover your products.</p>
-            </div>
-            <div class="feature-item">
-              <i class="fa-solid fa-badge-dollar fa-2x feature-icon"></i>
-              <h3>Free Advertisement</h3>
-              <p>Just post your products and let others know what you have.</p>
-            </div>
-            <div class="feature-item">
-              <i class="fa-solid fa-arrow-trend-up fa-2x feature-icon"></i>
-              <h3>Improve your sales</h3>
-              <p>You could significantly improve your sales</p>
-            </div>
-
-          </div>
-        </div>
-      </section>
-
-      <section class="cta-section">
-        <div class="container">
-          <div class="cta-content">
-            <h2 class="section-title">Create Your Account</h2>
-            <div class="cta-benefits">
-              <div class="benefit-item">
-                <h4>For Buyers</h4>
-                <p>
-                  Access authentic local products, compare prices, and get the
-                  best items near you.
-                </p>
-              </div>
-              <div class="benefit-item">
-                <h4>For Sellers</h4>
-                <p>
-                  Expand your reach, connect with more customers, and grow your
-                  local business effortlessly.
-                </p>
-              </div>
-            </div>
-            <div class="cta-buttons">
-              <a href="{{ url_for('signup') }}" class="cta-button primary"
-                >Start as Buyer</a
-              >
-              <a
-                href="{{ url_for('seller_signup') }}"
-                class="cta-button secondary"
-                >Join as Seller</a
-              >
-            </div>
-            <p class="cta-note">
-              Already have an account?
-              <a href="{{ url_for('login') }}" class="login-link"
-                >Sign in here</a
+          <div class="cta-panel__actions">
+            <a href="{{ url_for('seller_signup') }}" class="cta-button primary"
+              >Create a seller account</a
+            >
+            <a href="{{ url_for('signup') }}" class="cta-button ghost"
+              >Join as a buyer</a
+            >
+            <p>
+              Already part of the community?
+              <a href="{{ url_for('login') }}" class="text-link-inverse"
+                >Sign in</a
               >
             </p>
           </div>
         </div>
       </section>
-      <!-- Footer -->
+
       <footer class="footer">
         <div class="container footer-container">
           <div class="footer-brand">Amcho Pasro</div>
           <div class="footer-links">
-            <a href="mailto:info@amchopasro.com"><i class="fa-solid fa-envelope"></i></a>
+            <a href="mailto:info@amchopasro.com"
+              ><i class="fa-solid fa-envelope"></i
+            ></a>
             <a href="#"><i class="fa-brands fa-instagram"></i></a>
             <a href="#"><i class="fa-brands fa-facebook"></i></a>
           </div>
-          <div class="footer-copy">&copy; {{ current_year }} Amcho Pasro. All rights reserved.</div>
+          <div class="footer-copy">
+            &copy; {{ current_year }} Amcho Pasro. All rights reserved.
+          </div>
         </div>
       </footer>
     </main>
